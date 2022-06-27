@@ -1,4 +1,12 @@
-"""A linter for Sphinx docs"""
+"""
+    utils.doclinter
+    ~~~~~~~~~~~~~~~
+
+    A linter for Sphinx docs
+
+    :copyright: Copyright 2007-2019 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import os
 import re
@@ -12,7 +20,7 @@ LEADING_SPACES = re.compile(r'^(\s*)')
 
 
 def lint(path: str) -> int:
-    with open(path, encoding='utf-8') as f:
+    with open(path) as f:
         document = f.readlines()
 
     errors = 0
@@ -61,7 +69,7 @@ def main(args: List[str]) -> int:
         if os.path.isfile(path):
             errors += lint(path)
         elif os.path.isdir(path):
-            for root, _dirs, files in os.walk(path):
+            for root, dirs, files in os.walk(path):
                 for filename in files:
                     if filename.endswith('.rst'):
                         path = os.path.join(root, filename)

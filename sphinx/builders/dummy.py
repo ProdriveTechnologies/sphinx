@@ -1,4 +1,12 @@
-"""Do syntax checks, but no writing."""
+"""
+    sphinx.builders.dummy
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    Do syntax checks, but no writing.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Any, Dict, Set
 

@@ -1,19 +1,26 @@
-"""Create a full-text search index for offline search."""
+"""
+    sphinx.search
+    ~~~~~~~~~~~~~
+
+    Create a full-text search index for offline search.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 import html
-import json
 import pickle
 import re
-import warnings
 from importlib import import_module
 from os import path
 from typing import IO, Any, Dict, Iterable, List, Optional, Set, Tuple, Type
 
 from docutils import nodes
-from docutils.nodes import Element, Node
+from docutils.nodes import Node
 
 from sphinx import addnodes, package_dir
-from sphinx.deprecation import RemovedInSphinx70Warning
 from sphinx.environment import BuildEnvironment
+from sphinx.search.jssplitter import splitter_code
+from sphinx.util import jsdump
 
 
 class SearchLanguage:
@@ -49,7 +56,7 @@ class SearchLanguage:
     lang: str = None
     language_name: str = None
     stopwords: Set[str] = set()
-    js_splitter_code: str = ""
+    js_splitter_code: str = None
     js_stemmer_rawcode: str = None
     js_stemmer_code = """
 /**
@@ -156,14 +163,14 @@ class _JavaScriptIndex:
     SUFFIX = ')'
 
     def dumps(self, data: Any) -> str:
-        return self.PREFIX + json.dumps(data) + self.SUFFIX
+        return self.PREFIX + jsdump.dumps(data) + self.SUFFIX
 
     def loads(self, s: str) -> Any:
         data = s[len(self.PREFIX):-len(self.SUFFIX)]
         if not data or not s.startswith(self.PREFIX) or not \
            s.endswith(self.SUFFIX):
             raise ValueError('invalid data')
-        return json.loads(data)
+        return jsdump.loads(data)
 
     def dump(self, data: Any, f: IO) -> None:
         f.write(self.dumps(data))
@@ -186,9 +193,8 @@ class WordCollector(nodes.NodeVisitor):
         self.found_title_words: List[str] = []
         self.lang = lang
 
-    def is_meta_keywords(self, node: Element) -> bool:
-        if (isinstance(node, (addnodes.meta, addnodes.docutils_meta)) and
-                node.get('name') == 'keywords'):
+    def is_meta_keywords(self, node: addnodes.meta) -> bool:
+        if isinstance(node, addnodes.meta) and node.get('name') == 'keywords':
             meta_lang = node.get('lang')
             if meta_lang is None:  # lang not specified
                 return True
@@ -214,7 +220,7 @@ class WordCollector(nodes.NodeVisitor):
             self.found_words.extend(self.lang.split(node.astext()))
         elif isinstance(node, nodes.title):
             self.found_title_words.extend(self.lang.split(node.astext()))
-        elif isinstance(node, Element) and self.is_meta_keywords(node):
+        elif isinstance(node, addnodes.meta) and self.is_meta_keywords(node):
             keywords = node['content']
             keywords = [keyword.strip() for keyword in keywords.split(',')]
             self.found_words.extend(keywords)
@@ -226,7 +232,7 @@ class IndexBuilder:
     passed to the `feed` method.
     """
     formats = {
-        'json':     json,
+        'jsdump':   jsdump,
         'pickle':   pickle
     }
 
@@ -263,15 +269,11 @@ class IndexBuilder:
                 self.js_scorer_code = fp.read().decode()
         else:
             self.js_scorer_code = ''
-        self.js_splitter_code = ""
+        self.js_splitter_code = splitter_code
 
     def load(self, stream: IO, format: Any) -> None:
         """Reconstruct from frozen data."""
-        if format == "jsdump":
-            warnings.warn("format=jsdump is deprecated, use json instead",
-                          RemovedInSphinx70Warning, stacklevel=2)
-            format = self.formats["json"]
-        elif isinstance(format, str):
+        if isinstance(format, str):
             format = self.formats[format]
         frozen = format.load(stream)
         # if an old index is present, we treat it as not existing.
@@ -297,11 +299,7 @@ class IndexBuilder:
 
     def dump(self, stream: IO, format: Any) -> None:
         """Dump the frozen index to a stream."""
-        if format == "jsdump":
-            warnings.warn("format=jsdump is deprecated, use json instead",
-                          RemovedInSphinx70Warning, stacklevel=2)
-            format = self.formats["json"]
-        elif isinstance(format, str):
+        if isinstance(format, str):
             format = self.formats[format]
         format.dump(self.freeze(), stream)
 
@@ -427,7 +425,7 @@ class IndexBuilder:
 
         return {
             'search_language_stemming_code': self.get_js_stemmer_code(),
-            'search_language_stop_words': json.dumps(sorted(self.lang.stopwords)),
+            'search_language_stop_words': jsdump.dumps(sorted(self.lang.stopwords)),
             'search_scorer_tool': self.js_scorer_code,
             'search_word_splitter_code': js_splitter_code,
         }
@@ -449,9 +447,9 @@ class IndexBuilder:
         """Returns JS code that will be inserted into language_data.js."""
         if self.lang.js_stemmer_rawcode:
             js_dir = path.join(package_dir, 'search', 'minified-js')
-            with open(path.join(js_dir, 'base-stemmer.js'), encoding='utf-8') as js_file:
+            with open(path.join(js_dir, 'base-stemmer.js')) as js_file:
                 base_js = js_file.read()
-            with open(path.join(js_dir, self.lang.js_stemmer_rawcode), encoding='utf-8') as js_file:
+            with open(path.join(js_dir, self.lang.js_stemmer_rawcode)) as js_file:
                 language_js = js_file.read()
             return ('%s\n%s\nStemmer = %sStemmer;' %
                     (base_js, language_js, self.lang.language_name))

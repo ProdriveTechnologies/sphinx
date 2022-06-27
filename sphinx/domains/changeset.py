@@ -1,4 +1,12 @@
-"""The changeset domain."""
+"""
+    sphinx.domains.changeset
+    ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The changeset domain.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, cast
 
@@ -122,7 +130,7 @@ class ChangeSetDomain(Domain):
         self.changesets.setdefault(version, []).append(changeset)
 
     def clear_doc(self, docname: str) -> None:
-        for changes in self.changesets.values():
+        for version, changes in self.changesets.items():
             for changeset in changes[:]:
                 if changeset.docname == docname:
                     changes.remove(changeset)

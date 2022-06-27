@@ -1,4 +1,12 @@
-"""Dutch search language: includes the JS porter stemmer."""
+"""
+    sphinx.search.nl
+    ~~~~~~~~~~~~~~~~
+
+    Dutch search language: includes the JS porter stemmer.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Dict
 

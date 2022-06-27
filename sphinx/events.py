@@ -1,6 +1,13 @@
-"""Sphinx core events.
+"""
+    sphinx.events
+    ~~~~~~~~~~~~~
 
-Gracefully adapted from the TextPress system by Armin.
+    Sphinx core events.
+
+    Gracefully adapted from the TextPress system by Armin.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 from collections import defaultdict

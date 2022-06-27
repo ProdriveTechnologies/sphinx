@@ -1,3 +1,11 @@
+"""
+    test_transforms_post_transforms_code
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
+
 import pytest
 
 
@@ -5,7 +13,7 @@ import pytest
 def test_trim_doctest_flags_html(app, status, warning):
     app.build()
 
-    result = (app.outdir / 'index.html').read_text(encoding='utf8')
+    result = (app.outdir / 'index.html').read_text()
     assert 'FOO' not in result
     assert 'BAR' in result
     assert 'BAZ' not in result
@@ -20,7 +28,7 @@ def test_trim_doctest_flags_html(app, status, warning):
 def test_trim_doctest_flags_disabled(app, status, warning):
     app.build()
 
-    result = (app.outdir / 'index.html').read_text(encoding='utf8')
+    result = (app.outdir / 'index.html').read_text()
     assert 'FOO' in result
     assert 'BAR' in result
     assert 'BAZ' in result
@@ -34,7 +42,7 @@ def test_trim_doctest_flags_disabled(app, status, warning):
 def test_trim_doctest_flags_latex(app, status, warning):
     app.build()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert 'FOO' not in result
     assert 'BAR' in result
     assert 'BAZ' not in result

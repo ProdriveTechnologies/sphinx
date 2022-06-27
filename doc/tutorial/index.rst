@@ -35,5 +35,4 @@ project.
    narrative-documentation
    describing-code
    automatic-doc-generation
-   deploying
    end

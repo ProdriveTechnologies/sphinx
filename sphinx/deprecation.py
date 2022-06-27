@@ -1,4 +1,12 @@
-"""Sphinx deprecation classes and utilities."""
+"""
+    sphinx.deprecation
+    ~~~~~~~~~~~~~~~~~~
+
+    Sphinx deprecation classes and utilities.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import sys
 import warnings
@@ -6,15 +14,15 @@ from importlib import import_module
 from typing import Any, Dict, Type
 
 
-class RemovedInSphinx60Warning(DeprecationWarning):
+class RemovedInSphinx50Warning(DeprecationWarning):
     pass
 
 
-class RemovedInSphinx70Warning(PendingDeprecationWarning):
+class RemovedInSphinx60Warning(PendingDeprecationWarning):
     pass
 
 
-RemovedInNextVersionWarning = RemovedInSphinx60Warning
+RemovedInNextVersionWarning = RemovedInSphinx50Warning
 
 
 def deprecated_alias(modname: str, objects: Dict[str, object],

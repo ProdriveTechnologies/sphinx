@@ -499,10 +499,8 @@ __ https://pygments.org/docs/lexers
    The directive's alias name :rst:dir:`sourcecode` works as well.  This
    directive takes a language name as an argument.  It can be `any lexer alias
    supported by Pygments <https://pygments.org/docs/lexers/>`_.  If it is not
-   given, the setting of :rst:dir:`highlight` directive will be used.  If not
-   set, :confval:`highlight_language` will be used.  To display a code example
-   *inline* within other text, rather than as a separate block, you can use the
-   :rst:role:`code` role instead.
+   given, the setting of :rst:dir:`highlight` directive will be used.
+   If not set, :confval:`highlight_language` will be used.
 
    .. versionchanged:: 2.0
       The ``language`` argument becomes optional.
@@ -592,13 +590,6 @@ __ https://pygments.org/docs/lexers
 
       .. versionadded:: 1.3
 
-   .. rst:directive:option:: class: class names
-      :type: a list of class names separated by spaces
-
-      The class name of the graph.
-
-      .. versionadded:: 1.4
-
    .. rst:directive:option:: dedent: number
       :type: number or no value
 
@@ -607,7 +598,6 @@ __ https://pygments.org/docs/lexers
       are removed via :func:`textwrap.dedent()`.  For example::
 
          .. code-block:: ruby
-            :linenos:
             :dedent: 4
 
                 some ruby code
@@ -765,9 +755,6 @@ __ https://pygments.org/docs/lexers
       Added the ``diff``, ``lineno-match``, ``caption``, ``name``, and
       ``dedent`` options.
 
-   .. versionchanged:: 1.4
-      Added the ``class`` option.
-
    .. versionchanged:: 1.5
       Added the ``start-at``, and ``end-at`` options.
 
@@ -844,9 +831,6 @@ Glossary
    .. versionchanged:: 1.4
       Index key for glossary term should be considered *experimental*.
 
-   .. versionchanged:: 4.4
-      In internationalized documentation, the ``:sorted:`` flag sorts
-      according to translated terms.
 
 Meta-information markup
 -----------------------

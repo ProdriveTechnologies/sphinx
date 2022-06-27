@@ -1,4 +1,12 @@
-"""Locale utilities."""
+"""
+    sphinx.locale
+    ~~~~~~~~~~~~~
+
+    Locale utilities.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import gettext
 import locale
@@ -59,19 +67,19 @@ class _TranslationProxy(UserString):
     def __add__(self, other: str) -> str:  # type: ignore
         return self.data + other
 
-    def __radd__(self, other: str) -> str:  # type: ignore
+    def __radd__(self, other: str) -> str:
         return other + self.data
 
     def __mod__(self, other: str) -> str:  # type: ignore
         return self.data % other
 
-    def __rmod__(self, other: str) -> str:  # type: ignore
+    def __rmod__(self, other: str) -> str:
         return other % self.data
 
     def __mul__(self, other: Any) -> str:  # type: ignore
         return self.data * other
 
-    def __rmul__(self, other: Any) -> str:  # type: ignore
+    def __rmul__(self, other: Any) -> str:
         return other * self.data
 
     def __getattr__(self, name: str) -> Any:

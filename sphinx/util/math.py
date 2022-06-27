@@ -1,4 +1,12 @@
-"""Utility functions for math."""
+"""
+    sphinx.util.math
+    ~~~~~~~~~~~~~~~~
+
+    Utility functions for math.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from docutils import nodes
 

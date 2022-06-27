@@ -1,4 +1,12 @@
-"""Quickly setup documentation source to work with Sphinx."""
+"""
+    sphinx.cmd.quickstart
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    Quickly setup documentation source to work with Sphinx.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import argparse
 import locale
@@ -367,7 +375,7 @@ def generate(d: Dict, overwrite: bool = True, silent: bool = False, templatedir:
     conf_path = os.path.join(templatedir, 'conf.py_t') if templatedir else None
     if not conf_path or not path.isfile(conf_path):
         conf_path = os.path.join(package_dir, 'templates', 'quickstart', 'conf.py_t')
-    with open(conf_path, encoding="utf-8") as f:
+    with open(conf_path) as f:
         conf_text = f.read()
 
     write_file(path.join(srcdir, 'conf.py'), template.render_string(conf_text, d))

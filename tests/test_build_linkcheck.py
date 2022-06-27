@@ -1,4 +1,12 @@
-"""Test the build process with manpage builder with the test root."""
+"""
+    test_build_linkcheck
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Test the build process with manpage builder with the test root.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import http.server
 import json
@@ -28,7 +36,7 @@ def test_defaults(app):
     app.build()
 
     assert (app.outdir / 'output.txt').exists()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
 
     print(content)
     # looking for '#top' and '#does-not-exist' not found should fail
@@ -49,7 +57,7 @@ def test_defaults_json(app):
     app.build()
 
     assert (app.outdir / 'output.json').exists()
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     print(content)
 
     rows = [json.loads(x) for x in content.splitlines()]
@@ -110,7 +118,7 @@ def test_anchors_ignored(app):
     app.build()
 
     assert (app.outdir / 'output.txt').exists()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
 
     # expect all ok when excluding #top
     assert not content
@@ -124,7 +132,7 @@ def test_raises_for_invalid_status(app):
 
     with http_server(InternalServerErrorHandler):
         app.build()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
     assert content == (
         "index.rst:1: [broken] http://localhost:7777/#anchor: "
         "500 Server Error: Internal Server Error "
@@ -247,7 +255,7 @@ def test_follows_redirects_on_HEAD(app, capsys, warning):
     with http_server(make_redirect_handler(support_head=True)):
         app.build()
     stdout, stderr = capsys.readouterr()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
     assert content == (
         "index.rst:1: [redirected with Found] "
         "http://localhost:7777/ to http://localhost:7777/?redirected=1\n"
@@ -266,7 +274,7 @@ def test_follows_redirects_on_GET(app, capsys, warning):
     with http_server(make_redirect_handler(support_head=False)):
         app.build()
     stdout, stderr = capsys.readouterr()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
     assert content == (
         "index.rst:1: [redirected with Found] "
         "http://localhost:7777/ to http://localhost:7777/?redirected=1\n"
@@ -289,7 +297,7 @@ def test_linkcheck_allowed_redirects(app, warning):
     with http_server(make_redirect_handler(support_head=False)):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         records = [json.loads(l) for l in fp.readlines()]
 
     assert len(records) == 2
@@ -318,7 +326,7 @@ def test_invalid_ssl(app):
     with http_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content["status"] == "broken"
     assert content["filename"] == "index.rst"
@@ -332,7 +340,7 @@ def test_connect_to_selfsigned_fails(app):
     with https_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content["status"] == "broken"
     assert content["filename"] == "index.rst"
@@ -347,7 +355,7 @@ def test_connect_to_selfsigned_with_tls_verify_false(app):
     with https_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content == {
         "code": 0,
@@ -365,7 +373,7 @@ def test_connect_to_selfsigned_with_tls_cacerts(app):
     with https_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content == {
         "code": 0,
@@ -383,7 +391,7 @@ def test_connect_to_selfsigned_with_requests_env_var(monkeypatch, app):
     with https_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content == {
         "code": 0,
@@ -401,7 +409,7 @@ def test_connect_to_selfsigned_nonexistent_cert_file(app):
     with https_server(OKHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content == {
         "code": 0,
@@ -429,7 +437,7 @@ def test_TooManyRedirects_on_HEAD(app):
     with http_server(InfiniteRedirectOnHeadHandler):
         app.build()
 
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
+    with open(app.outdir / 'output.json') as fp:
         content = json.load(fp)
     assert content == {
         "code": 0,
@@ -463,7 +471,7 @@ def test_too_many_requests_retry_after_int_delay(app, capsys, status):
          mock.patch("sphinx.builders.linkcheck.DEFAULT_DELAY", 0), \
          mock.patch("sphinx.builders.linkcheck.QUEUE_POLL_SECS", 0.01):
         app.build()
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     assert json.loads(content) == {
         "filename": "index.rst",
         "lineno": 1,
@@ -489,7 +497,7 @@ def test_too_many_requests_retry_after_HTTP_date(app, capsys):
     retry_after = wsgiref.handlers.format_date_time(time.mktime(now))
     with http_server(make_retry_after_handler([(429, retry_after), (200, None)])):
         app.build()
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     assert json.loads(content) == {
         "filename": "index.rst",
         "lineno": 1,
@@ -512,7 +520,7 @@ def test_too_many_requests_retry_after_without_header(app, capsys):
     with http_server(make_retry_after_handler([(429, None), (200, None)])),\
          mock.patch("sphinx.builders.linkcheck.DEFAULT_DELAY", 0):
         app.build()
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     assert json.loads(content) == {
         "filename": "index.rst",
         "lineno": 1,
@@ -535,7 +543,7 @@ def test_too_many_requests_user_timeout(app, capsys):
     app.config.linkcheck_rate_limit_timeout = 0.0
     with http_server(make_retry_after_handler([(429, None)])):
         app.build()
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     assert json.loads(content) == {
         "filename": "index.rst",
         "lineno": 1,
@@ -606,9 +614,9 @@ class ConnectionResetHandler(http.server.BaseHTTPRequestHandler):
 def test_get_after_head_raises_connection_error(app):
     with http_server(ConnectionResetHandler):
         app.build()
-    content = (app.outdir / 'output.txt').read_text(encoding='utf8')
+    content = (app.outdir / 'output.txt').read_text()
     assert not content
-    content = (app.outdir / 'output.json').read_text(encoding='utf8')
+    content = (app.outdir / 'output.json').read_text()
     assert json.loads(content) == {
         "filename": "index.rst",
         "lineno": 1,
@@ -617,30 +625,3 @@ def test_get_after_head_raises_connection_error(app):
         "uri": "http://localhost:7777/",
         "info": "",
     }
-
-
-@pytest.mark.sphinx('linkcheck', testroot='linkcheck-documents_exclude', freshenv=True)
-def test_linkcheck_exclude_documents(app):
-    app.build()
-
-    with open(app.outdir / 'output.json', encoding='utf-8') as fp:
-        content = [json.loads(record) for record in fp]
-
-    assert content == [
-        {
-            'filename': 'broken_link.rst',
-            'lineno': 4,
-            'status': 'ignored',
-            'code': 0,
-            'uri': 'https://www.sphinx-doc.org/this-is-a-broken-link',
-            'info': 'broken_link matched ^broken_link$ from linkcheck_exclude_documents',
-        },
-        {
-            'filename': 'br0ken_link.rst',
-            'lineno': 4,
-            'status': 'ignored',
-            'code': 0,
-            'uri': 'https://www.sphinx-doc.org/this-is-another-broken-link',
-            'info': 'br0ken_link matched br[0-9]ken_link from linkcheck_exclude_documents',
-        },
-    ]

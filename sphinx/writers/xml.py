@@ -1,4 +1,12 @@
-"""Docutils-native XML and pseudo-XML writers."""
+"""
+    sphinx.writers.xml
+    ~~~~~~~~~~~~~~~~~~
+
+    Docutils-native XML and pseudo-XML writers.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Any
 

@@ -1,4 +1,12 @@
-"""Sphinx test comparer for pytest"""
+"""
+    sphinx.testing.comparer
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    Sphinx test comparer for pytest
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 import difflib
 import pathlib
 from typing import Any, List, Union

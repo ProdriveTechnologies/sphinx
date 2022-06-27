@@ -1,7 +1,12 @@
-"""Check Python modules and C API for coverage.
+"""
+    sphinx.ext.coverage
+    ~~~~~~~~~~~~~~~~~~~
 
-Mostly written by Josip Dzolonga for the Google Highly Open Participation
-contest.
+    Check Python modules and C API for coverage.  Mostly written by Josip
+    Dzolonga for the Google Highly Open Participation contest.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import glob
@@ -90,7 +95,7 @@ class CoverageBuilder(Builder):
         c_objects = self.env.domaindata['c']['objects']
         for filename in self.c_sourcefiles:
             undoc: Set[Tuple[str, str]] = set()
-            with open(filename, encoding="utf-8") as f:
+            with open(filename) as f:
                 for line in f:
                     for key, regex in self.c_regexes:
                         match = regex.match(line)
@@ -108,7 +113,7 @@ class CoverageBuilder(Builder):
 
     def write_c_coverage(self) -> None:
         output_file = path.join(self.outdir, 'c.txt')
-        with open(output_file, 'w', encoding="utf-8") as op:
+        with open(output_file, 'w') as op:
             if self.config.coverage_write_headline:
                 write_header(op, 'Undocumented C API elements', '=')
             op.write('\n')
@@ -227,7 +232,7 @@ class CoverageBuilder(Builder):
     def write_py_coverage(self) -> None:
         output_file = path.join(self.outdir, 'python.txt')
         failed = []
-        with open(output_file, 'w', encoding="utf-8") as op:
+        with open(output_file, 'w') as op:
             if self.config.coverage_write_headline:
                 write_header(op, 'Undocumented Python objects', '=')
             keys = sorted(self.py_undoc.keys())

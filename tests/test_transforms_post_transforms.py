@@ -1,4 +1,12 @@
-"""Tests the post_transforms"""
+"""
+    test_transforms_post_transforms
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests the post_transforms
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import pytest
 from docutils import nodes
@@ -10,7 +18,7 @@ def test_nitpicky_warning(app, status, warning):
     assert ('index.rst:4: WARNING: py:class reference target '
             'not found: io.StringIO' in warning.getvalue())
 
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert ('<p><code class="xref py py-class docutils literal notranslate"><span class="pre">'
             'io.StringIO</span></code></p>' in content)
 
@@ -31,7 +39,7 @@ def test_missing_reference(app, status, warning):
     app.build()
     assert warning.getvalue() == ''
 
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert '<p><span>missing-reference.StringIO</span></p>' in content
 
 
@@ -46,5 +54,5 @@ def test_missing_reference_conditional_pending_xref(app, status, warning):
     app.build()
     assert warning.getvalue() == ''
 
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert '<span class="n"><span class="pre">Age</span></span>' in content

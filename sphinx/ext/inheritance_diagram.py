@@ -1,31 +1,38 @@
-r"""Defines a docutils directive for inserting inheritance diagrams.
+r"""
+    sphinx.ext.inheritance_diagram
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Provide the directive with one or more classes or modules (separated
-by whitespace).  For modules, all of the classes in that module will
-be used.
+    Defines a docutils directive for inserting inheritance diagrams.
 
-Example::
+    Provide the directive with one or more classes or modules (separated
+    by whitespace).  For modules, all of the classes in that module will
+    be used.
 
-   Given the following classes:
+    Example::
 
-   class A: pass
-   class B(A): pass
-   class C(A): pass
-   class D(B, C): pass
-   class E(B): pass
+       Given the following classes:
 
-   .. inheritance-diagram: D E
+       class A: pass
+       class B(A): pass
+       class C(A): pass
+       class D(B, C): pass
+       class E(B): pass
 
-   Produces a graph like the following:
+       .. inheritance-diagram: D E
 
-               A
-              / \
-             B   C
-            / \ /
-           E   D
+       Produces a graph like the following:
 
-The graph is inserted as a PNG+image map into HTML and a PDF in
-LaTeX.
+                   A
+                  / \
+                 B   C
+                / \ /
+               E   D
+
+    The graph is inserted as a PNG+image map into HTML and a PDF in
+    LaTeX.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import builtins

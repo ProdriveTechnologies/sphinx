@@ -1,4 +1,12 @@
-"""Finnish search language: includes the JS Finnish stemmer."""
+"""
+    sphinx.search.fi
+    ~~~~~~~~~~~~~~~~
+
+    Finnish search language: includes the JS Finnish stemmer.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Dict
 

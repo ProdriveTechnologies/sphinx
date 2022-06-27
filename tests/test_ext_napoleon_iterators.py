@@ -1,4 +1,13 @@
-"""Tests for :mod:`sphinx.ext.napoleon.iterators` module."""
+"""
+    test_napoleon_iterators
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for :mod:`sphinx.ext.napoleon.iterators` module.
+
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from unittest import TestCase
 

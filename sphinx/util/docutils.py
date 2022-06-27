@@ -1,8 +1,15 @@
-"""Utility functions for docutils."""
+"""
+    sphinx.util.docutils
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Utility functions for docutils.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import os
 import re
-import warnings
 from contextlib import contextmanager
 from copy import copy
 from os import path
@@ -18,10 +25,10 @@ from docutils.parsers.rst import Directive, directives, roles
 from docutils.parsers.rst.states import Inliner
 from docutils.statemachine import State, StateMachine, StringList
 from docutils.utils import Reporter, unescape
+from packaging import version
 
-from sphinx.deprecation import RemovedInSphinx70Warning, deprecated_alias
 from sphinx.errors import SphinxError
-from sphinx.locale import _, __
+from sphinx.locale import _
 from sphinx.util import logging
 from sphinx.util.typing import RoleFunction
 
@@ -33,14 +40,8 @@ if TYPE_CHECKING:
     from sphinx.config import Config
     from sphinx.environment import BuildEnvironment
 
-deprecated_alias('sphinx.util.docutils',
-                 {
-                     '__version_info__': docutils.__version_info__,
-                 },
-                 RemovedInSphinx70Warning,
-                 {
-                     '__version_info__': 'docutils.__version_info__',
-                 })
+
+__version_info__ = version.parse(docutils.__version__).release
 additional_nodes: Set[Type[Element]] = set()
 
 
@@ -143,30 +144,6 @@ def patched_get_language() -> Generator[None, None, None]:
 
 
 @contextmanager
-def patched_rst_get_language() -> Generator[None, None, None]:
-    """Patch docutils.parsers.rst.languages.get_language().
-    Starting from docutils 0.17, get_language() in ``rst.languages``
-    also has a reporter, which needs to be disabled temporarily.
-
-    This should also work for old versions of docutils,
-    because reporter is none by default.
-
-    refs: https://github.com/sphinx-doc/sphinx/issues/10179
-    """
-    from docutils.parsers.rst.languages import get_language
-
-    def patched_get_language(language_code: str, reporter: Reporter = None) -> Any:
-        return get_language(language_code)
-
-    try:
-        docutils.parsers.rst.languages.get_language = patched_get_language
-        yield
-    finally:
-        # restore original implementations
-        docutils.parsers.rst.languages.get_language = get_language
-
-
-@contextmanager
 def using_user_docutils_conf(confdir: Optional[str]) -> Generator[None, None, None]:
     """Let docutils know the location of ``docutils.conf`` for Sphinx."""
     try:
@@ -185,18 +162,20 @@ def using_user_docutils_conf(confdir: Optional[str]) -> Generator[None, None, No
 @contextmanager
 def patch_docutils(confdir: Optional[str] = None) -> Generator[None, None, None]:
     """Patch to docutils temporarily."""
-    with patched_get_language(), patched_rst_get_language(), using_user_docutils_conf(confdir):
+    with patched_get_language(), using_user_docutils_conf(confdir):
         yield
 
 
-class CustomReSTDispatcher:
-    """Custom reST's mark-up dispatcher.
+class ElementLookupError(Exception):
+    pass
 
-    This replaces docutils's directives and roles dispatch mechanism for reST parser
-    by original one temporarily.
+
+class sphinx_domains:
+    """Monkey-patch directive and role dispatch, so that domain-specific
+    markup takes precedence.
     """
-
-    def __init__(self) -> None:
+    def __init__(self, env: "BuildEnvironment") -> None:
+        self.env = env
         self.directive_func: Callable = lambda *args: (None, [])
         self.roles_func: Callable = lambda *args: (None, [])
 
@@ -210,34 +189,12 @@ class CustomReSTDispatcher:
         self.directive_func = directives.directive
         self.role_func = roles.role
 
-        directives.directive = self.directive
-        roles.role = self.role
+        directives.directive = self.lookup_directive
+        roles.role = self.lookup_role
 
     def disable(self) -> None:
         directives.directive = self.directive_func
         roles.role = self.role_func
-
-    def directive(self,
-                  directive_name: str, language_module: ModuleType, document: nodes.document
-                  ) -> Tuple[Optional[Type[Directive]], List[system_message]]:
-        return self.directive_func(directive_name, language_module, document)
-
-    def role(self, role_name: str, language_module: ModuleType, lineno: int, reporter: Reporter
-             ) -> Tuple[RoleFunction, List[system_message]]:
-        return self.role_func(role_name, language_module, lineno, reporter)
-
-
-class ElementLookupError(Exception):
-    pass
-
-
-class sphinx_domains(CustomReSTDispatcher):
-    """Monkey-patch directive and role dispatch, so that domain-specific
-    markup takes precedence.
-    """
-    def __init__(self, env: "BuildEnvironment") -> None:
-        self.env = env
-        super().__init__()
 
     def lookup_domain_element(self, type: str, name: str) -> Any:
         """Lookup a markup element (directive or role), given its name which can
@@ -269,20 +226,17 @@ class sphinx_domains(CustomReSTDispatcher):
 
         raise ElementLookupError
 
-    def directive(self,
-                  directive_name: str, language_module: ModuleType, document: nodes.document
-                  ) -> Tuple[Optional[Type[Directive]], List[system_message]]:
+    def lookup_directive(self, directive_name: str, language_module: ModuleType, document: nodes.document) -> Tuple[Optional[Type[Directive]], List[system_message]]:  # NOQA
         try:
             return self.lookup_domain_element('directive', directive_name)
         except ElementLookupError:
-            return super().directive(directive_name, language_module, document)
+            return self.directive_func(directive_name, language_module, document)
 
-    def role(self, role_name: str, language_module: ModuleType, lineno: int, reporter: Reporter
-             ) -> Tuple[RoleFunction, List[system_message]]:
+    def lookup_role(self, role_name: str, language_module: ModuleType, lineno: int, reporter: Reporter) -> Tuple[RoleFunction, List[system_message]]:  # NOQA
         try:
             return self.lookup_domain_element('role', role_name)
         except ElementLookupError:
-            return super().role(role_name, language_module, lineno, reporter)
+            return self.role_func(role_name, language_module, lineno, reporter)
 
 
 class WarningStream:
@@ -319,9 +273,7 @@ class NullReporter(Reporter):
 
 
 def is_html5_writer_available() -> bool:
-    warnings.warn('is_html5_writer_available() is deprecated.',
-                  RemovedInSphinx70Warning)
-    return True
+    return __version_info__ > (0, 13, 0)
 
 
 @contextmanager
@@ -347,7 +299,6 @@ class SphinxFileOutput(FileOutput):
 
     def __init__(self, **kwargs: Any) -> None:
         self.overwrite_if_changed = kwargs.pop('overwrite_if_changed', False)
-        kwargs.setdefault('encoding', 'utf-8')
         super().__init__(**kwargs)
 
     def write(self, data: str) -> str:
@@ -544,19 +495,6 @@ class SphinxTranslator(nodes.NodeVisitor):
                 break
         else:
             super().dispatch_departure(node)
-
-    def unknown_visit(self, node: Node) -> None:
-        logger.warning(__('unknown node type: %r'), node, location=node)
-
-
-# Node.findall() is a new interface to traverse a doctree since docutils-0.18.
-# This applies a patch docutils-0.17 or older to be available Node.findall()
-# method to use it from our codebase.
-if docutils.__version_info__ < (0, 18):
-    def findall(self, *args, **kwargs):
-        return iter(self.traverse(*args, **kwargs))
-
-    Node.findall = findall  # type: ignore
 
 
 # cache a vanilla instance of nodes.document

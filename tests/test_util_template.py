@@ -1,4 +1,12 @@
-"""Tests sphinx.util.template functions."""
+"""
+    test_util_template
+    ~~~~~~~~~~~~~~~~~~
+
+    Tests sphinx.util.template functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from sphinx.util.template import ReSTRenderer
 

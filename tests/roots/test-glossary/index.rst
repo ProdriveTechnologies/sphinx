@@ -18,5 +18,5 @@ test-glossary
    über
       Gewisse
 
-   ähnlich
+   änhlich
       Dinge

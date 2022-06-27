@@ -1,4 +1,12 @@
-"""The math domain."""
+"""
+    sphinx.domains.math
+    ~~~~~~~~~~~~~~~~~~~
+
+    The math domain.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Tuple
 
@@ -70,10 +78,10 @@ class MathDomain(Domain):
         def math_node(node: Node) -> bool:
             return isinstance(node, (nodes.math, nodes.math_block))
 
-        self.data['has_equations'][docname] = any(document.findall(math_node))
+        self.data['has_equations'][docname] = any(document.traverse(math_node))
 
     def clear_doc(self, docname: str) -> None:
-        for equation_id, (doc, _eqno) in list(self.equations.items()):
+        for equation_id, (doc, eqno) in list(self.equations.items()):
             if doc == docname:
                 del self.equations[equation_id]
 

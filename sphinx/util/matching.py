@@ -1,4 +1,12 @@
-"""Pattern-matching utility functions for Sphinx."""
+"""
+    sphinx.util.matching
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Pattern-matching utility functions for Sphinx.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 from typing import Callable, Dict, Iterable, List, Match, Optional, Pattern

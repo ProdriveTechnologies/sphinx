@@ -1,4 +1,12 @@
-"""reST helper functions."""
+"""
+    sphinx.util.rst
+    ~~~~~~~~~~~~~~~
+
+    reST helper functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 from collections import defaultdict

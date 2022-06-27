@@ -1,4 +1,12 @@
-"""TeX escaping helper."""
+"""
+    sphinx.util.texescape
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    TeX escaping helper.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 from typing import Dict

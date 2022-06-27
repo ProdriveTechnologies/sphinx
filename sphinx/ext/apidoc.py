@@ -1,12 +1,17 @@
-"""Creates reST files corresponding to Python modules for code documentation.
+"""
+    sphinx.ext.apidoc
+    ~~~~~~~~~~~~~~~~~
 
-Parses a directory tree looking for Python modules and packages and creates
-ReST files appropriately to create code documentation with Sphinx.  It also
-creates a modules index (named modules.<suffix>).
+    Parses a directory tree looking for Python modules and packages and creates
+    ReST files appropriately to create code documentation with Sphinx.  It also
+    creates a modules index (named modules.<suffix>).
 
-This is derived from the "sphinx-autopackage" script, which is:
-Copyright 2008 Société des arts technologiques (SAT),
-https://sat.qc.ca/
+    This is derived from the "sphinx-autopackage" script, which is:
+    Copyright 2008 Société des arts technologiques (SAT),
+    https://sat.qc.ca/
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import argparse
@@ -117,7 +122,6 @@ def create_package_file(root: str, master_package: str, subroot: str, py_files: 
     submodules = [sub.split('.')[0] for sub in py_files
                   if not is_skipped_module(path.join(root, sub), opts, excludes) and
                   not is_initpy(sub)]
-    submodules = sorted(set(submodules))
     submodules = [module_join(master_package, subroot, modname)
                   for modname in submodules]
     options = copy(OPTIONS)
@@ -223,7 +227,7 @@ def walk(rootpath: str, excludes: List[str], opts: Any
 
 def has_child_module(rootpath: str, excludes: List[str], opts: Any) -> bool:
     """Check the given directory contains child module/s (at least one)."""
-    for _root, _subs, files in walk(rootpath, excludes, opts):
+    for root, subs, files in walk(rootpath, excludes, opts):
         if files:
             return True
 

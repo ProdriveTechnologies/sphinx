@@ -1,4 +1,12 @@
-"""Test the build process with LaTeX builder with the test root."""
+"""
+    test_build_latex
+    ~~~~~~~~~~~~~~~~
+
+    Test the build process with LaTeX builder with the test root.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import os
 import re
@@ -104,7 +112,7 @@ def test_build_latex_doc(app, status, warning, engine, docclass):
 @pytest.mark.sphinx('latex')
 def test_writer(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'sphinxtests.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxtests.tex').read_text()
 
     assert ('\\begin{sphinxfigure-in-table}\n\\centering\n\\capstart\n'
             '\\noindent\\sphinxincludegraphics{{img}.png}\n'
@@ -147,7 +155,7 @@ def test_latex_warnings(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='basic')
 def test_latex_basic(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -240,7 +248,7 @@ def test_latex_theme_options(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='basic', confoverrides={'language': 'zh'})
 def test_latex_additional_settings_for_language_code(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -250,7 +258,7 @@ def test_latex_additional_settings_for_language_code(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='basic', confoverrides={'language': 'el'})
 def test_latex_additional_settings_for_greek(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -261,7 +269,7 @@ def test_latex_additional_settings_for_greek(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='latex-title')
 def test_latex_title_after_admonitions(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -272,7 +280,7 @@ def test_latex_title_after_admonitions(app, status, warning):
                     confoverrides={'release': '1.0_0'})
 def test_latex_release(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -284,7 +292,7 @@ def test_latex_release(app, status, warning):
                     confoverrides={'numfig': True})
 def test_numref(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -310,7 +318,7 @@ def test_numref(app, status, warning):
             '\\nameref{\\detokenize{foo:foo}}}') in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\addto\captionsenglish{\renewcommand{\figurename}{Fig.\@{} }}' in result
     assert r'\addto\captionsenglish{\renewcommand{\tablename}{Table }}' in result
@@ -326,7 +334,7 @@ def test_numref(app, status, warning):
                                      'section': 'SECTION-%s'}})
 def test_numref_with_prefix1(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -358,7 +366,7 @@ def test_numref_with_prefix1(app, status, warning):
             '\\nameref{\\detokenize{foo:foo}}}') in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\addto\captionsenglish{\renewcommand{\figurename}{Figure:}}' in result
     assert r'\addto\captionsenglish{\renewcommand{\tablename}{Tab\_}}' in result
@@ -374,7 +382,7 @@ def test_numref_with_prefix1(app, status, warning):
                                      'section': 'SECTION_%s_'}})
 def test_numref_with_prefix2(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -400,7 +408,7 @@ def test_numref_with_prefix2(app, status, warning):
             '\\nameref{\\detokenize{foo:foo}}}') in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\addto\captionsenglish{\renewcommand{\figurename}{Figure:}}' in result
     assert r'\def\fnum@figure{\figurename\thefigure{}.}' in result
@@ -414,7 +422,7 @@ def test_numref_with_prefix2(app, status, warning):
     confoverrides={'numfig': True, 'language': 'ja'})
 def test_numref_with_language_ja(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -440,7 +448,7 @@ def test_numref_with_language_ja(app, status, warning):
             '\\nameref{\\detokenize{foo:foo}}}') in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert '\\@iden{\\renewcommand{\\figurename}{図 }}' in result
     assert '\\@iden{\\renewcommand{\\tablename}{表 }}' in result
@@ -451,10 +459,10 @@ def test_numref_with_language_ja(app, status, warning):
 def test_latex_obey_numfig_is_false(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'SphinxManual.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxManual.tex').read_text()
     assert '\\usepackage{sphinx}' in result
 
-    result = (app.outdir / 'SphinxHowTo.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxHowTo.tex').read_text()
     assert '\\usepackage{sphinx}' in result
 
 
@@ -464,10 +472,10 @@ def test_latex_obey_numfig_is_false(app, status, warning):
 def test_latex_obey_numfig_secnum_depth_is_zero(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'SphinxManual.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxManual.tex').read_text()
     assert '\\usepackage[,nonumfigreset,mathnumfig]{sphinx}' in result
 
-    result = (app.outdir / 'SphinxHowTo.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxHowTo.tex').read_text()
     assert '\\usepackage[,nonumfigreset,mathnumfig]{sphinx}' in result
 
 
@@ -477,10 +485,10 @@ def test_latex_obey_numfig_secnum_depth_is_zero(app, status, warning):
 def test_latex_obey_numfig_secnum_depth_is_two(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'SphinxManual.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxManual.tex').read_text()
     assert '\\usepackage[,numfigreset=2,mathnumfig]{sphinx}' in result
 
-    result = (app.outdir / 'SphinxHowTo.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxHowTo.tex').read_text()
     assert '\\usepackage[,numfigreset=3,mathnumfig]{sphinx}' in result
 
 
@@ -490,10 +498,10 @@ def test_latex_obey_numfig_secnum_depth_is_two(app, status, warning):
 def test_latex_obey_numfig_but_math_numfig_false(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'SphinxManual.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxManual.tex').read_text()
     assert '\\usepackage[,numfigreset=1]{sphinx}' in result
 
-    result = (app.outdir / 'SphinxHowTo.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'SphinxHowTo.tex').read_text()
     assert '\\usepackage[,numfigreset=2]{sphinx}' in result
 
 
@@ -502,7 +510,7 @@ def test_latex_add_latex_package(app, status, warning):
     app.add_latex_package('foo')
     app.add_latex_package('bar', 'baz')
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     assert '\\usepackage{foo}' in result
     assert '\\usepackage[baz]{bar}' in result
 
@@ -510,7 +518,7 @@ def test_latex_add_latex_package(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='latex-babel')
 def test_babel_with_no_language_settings(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -520,10 +528,10 @@ def test_babel_with_no_language_settings(app, status, warning):
     assert '\\usepackage[Bjarne]{fncychap}' in result
     assert ('\\addto\\captionsenglish{\\renewcommand{\\contentsname}{Table of content}}\n'
             in result)
-    assert '\\shorthandoff{"}' in result
+    assert '\\shorthandoff' not in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{page}' in result
     assert r'\addto\captionsenglish{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -535,7 +543,7 @@ def test_babel_with_no_language_settings(app, status, warning):
     confoverrides={'language': 'de'})
 def test_babel_with_language_de(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -548,7 +556,7 @@ def test_babel_with_language_de(app, status, warning):
     assert '\\shorthandoff{"}' in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{Seite}' in result
     assert r'\addto\captionsngerman{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -560,7 +568,7 @@ def test_babel_with_language_de(app, status, warning):
     confoverrides={'language': 'ru'})
 def test_babel_with_language_ru(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -573,7 +581,7 @@ def test_babel_with_language_ru(app, status, warning):
     assert '\\shorthandoff{"}' in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{страница}' in result
     assert r'\addto\captionsrussian{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -585,7 +593,7 @@ def test_babel_with_language_ru(app, status, warning):
     confoverrides={'language': 'tr'})
 def test_babel_with_language_tr(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -598,7 +606,7 @@ def test_babel_with_language_tr(app, status, warning):
     assert '\\shorthandoff{=}' in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{sayfa}' in result
     assert r'\addto\captionsturkish{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -610,7 +618,7 @@ def test_babel_with_language_tr(app, status, warning):
     confoverrides={'language': 'ja'})
 def test_babel_with_language_ja(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -622,7 +630,7 @@ def test_babel_with_language_ja(app, status, warning):
     assert '\\shorthandoff' not in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{ページ}' in result
     assert '\\@iden{\\renewcommand{\\figurename}{Fig.\\@{} }}' in result
@@ -634,7 +642,7 @@ def test_babel_with_language_ja(app, status, warning):
     confoverrides={'language': 'unknown'})
 def test_babel_with_unknown_language(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -649,7 +657,7 @@ def test_babel_with_unknown_language(app, status, warning):
     assert "WARNING: no Babel option known for language 'unknown'" in warning.getvalue()
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{page}' in result
     assert r'\addto\captionsenglish{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -661,7 +669,7 @@ def test_babel_with_unknown_language(app, status, warning):
     confoverrides={'language': 'de', 'latex_engine': 'lualatex'})
 def test_polyglossia_with_language_de(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -675,7 +683,7 @@ def test_polyglossia_with_language_de(app, status, warning):
     assert '\\shorthandoff' not in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{Seite}' in result
     assert r'\addto\captionsgerman{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -687,7 +695,7 @@ def test_polyglossia_with_language_de(app, status, warning):
     confoverrides={'language': 'de-1901', 'latex_engine': 'lualatex'})
 def test_polyglossia_with_language_de_1901(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -701,7 +709,7 @@ def test_polyglossia_with_language_de_1901(app, status, warning):
     assert '\\shorthandoff' not in result
 
     # sphinxmessages.sty
-    result = (app.outdir / 'sphinxmessages.sty').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxmessages.sty').read_text()
     print(result)
     assert r'\def\pageautorefname{page}' in result
     assert r'\addto\captionsgerman{\renewcommand{\figurename}{Fig.\@{} }}' in result
@@ -711,21 +719,26 @@ def test_polyglossia_with_language_de_1901(app, status, warning):
 @pytest.mark.sphinx('latex')
 def test_footnote(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'sphinxtests.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'sphinxtests.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
-    assert ('\\sphinxAtStartPar\n%\n\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
-            'numbered\n%\n\\end{footnote}') in result
+    assert ('\\sphinxstepexplicit %\n\\begin{footnote}[1]\\phantomsection'
+            '\\label{\\thesphinxscope.1}%\n\\sphinxAtStartFootnote\nnumbered\n%\n'
+            '\\end{footnote}') in result
     assert ('\\begin{footnote}[2]\\sphinxAtStartFootnote\nauto numbered\n%\n'
             '\\end{footnote}') in result
     assert '\\begin{footnote}[3]\\sphinxAtStartFootnote\nnamed\n%\n\\end{footnote}' in result
     assert '\\sphinxcite{footnote:bar}' in result
     assert ('\\bibitem[bar]{footnote:bar}\n\\sphinxAtStartPar\ncite\n') in result
     assert '\\sphinxcaption{Table caption \\sphinxfootnotemark[4]' in result
-    assert ('\\hline%\n\\begin{footnotetext}[4]\\sphinxAtStartFootnote\n'
+    assert ('\\hline%\n\\begin{footnotetext}[4]'
+            '\\phantomsection\\label{\\thesphinxscope.4}%\n'
+            '\\sphinxAtStartFootnote\n'
             'footnote in table caption\n%\n\\end{footnotetext}\\ignorespaces %\n'
-            '\\begin{footnotetext}[5]\\sphinxAtStartFootnote\n'
+            '\\begin{footnotetext}[5]'
+            '\\phantomsection\\label{\\thesphinxscope.5}%\n'
+            '\\sphinxAtStartFootnote\n'
             'footnote in table header\n%\n\\end{footnotetext}\\ignorespaces '
             '\n\\sphinxAtStartPar\n'
             'VIDIOC\\_CROPCAP\n&\n\\sphinxAtStartPar\n') in result
@@ -739,7 +752,7 @@ def test_footnote(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='footnotes')
 def test_reference_in_caption_and_codeblock_in_footnote(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -749,50 +762,38 @@ def test_reference_in_caption_and_codeblock_in_footnote(app, status, warning):
     assert ('\\sphinxcaption{The table title with a reference'
             ' to {[}AuthorYear{]}}' in result)
     assert '\\subsubsection*{The rubric title with a reference to {[}AuthorYear{]}}' in result
-    assert ('\\chapter{The section with a reference to \\sphinxfootnotemark[6]}\n'
+    assert ('\\chapter{The section with a reference to \\sphinxfootnotemark[5]}\n'
             '\\label{\\detokenize{index:the-section-with-a-reference-to}}'
-            '%\n\\begin{footnotetext}[6]\\sphinxAtStartFootnote\n'
+            '%\n\\begin{footnotetext}[5]'
+            '\\phantomsection\\label{\\thesphinxscope.5}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote in section\n%\n\\end{footnotetext}') in result
     assert ('\\caption{This is the figure caption with a footnote to '
-            '\\sphinxfootnotemark[8].}\\label{\\detokenize{index:id35}}\\end{figure}\n'
-            '%\n\\begin{footnotetext}[8]\\sphinxAtStartFootnote\n'
+            '\\sphinxfootnotemark[7].}\\label{\\detokenize{index:id29}}\\end{figure}\n'
+            '%\n\\begin{footnotetext}[7]'
+            '\\phantomsection\\label{\\thesphinxscope.7}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote in caption\n%\n\\end{footnotetext}') in result
-    assert ('\\sphinxcaption{footnote \\sphinxfootnotemark[9] in '
-            'caption of normal table}\\label{\\detokenize{index:id36}}') in result
-    assert ('\\caption{footnote \\sphinxfootnotemark[10] '
-            'in caption \\sphinxfootnotemark[11] of longtable\\strut}') in result
-    assert ('\\endlastfoot\n%\n\\begin{footnotetext}[10]\\sphinxAtStartFootnote\n'
+    assert ('\\sphinxcaption{footnote \\sphinxfootnotemark[8] in '
+            'caption of normal table}\\label{\\detokenize{index:id30}}') in result
+    assert ('\\caption{footnote \\sphinxfootnotemark[9] '
+            'in caption \\sphinxfootnotemark[10] of longtable\\strut}') in result
+    assert ('\\endlastfoot\n%\n\\begin{footnotetext}[9]'
+            '\\phantomsection\\label{\\thesphinxscope.9}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Foot note in longtable\n%\n\\end{footnotetext}\\ignorespaces %\n'
-            '\\begin{footnotetext}[11]\\sphinxAtStartFootnote\n'
+            '\\begin{footnotetext}[10]'
+            '\\phantomsection\\label{\\thesphinxscope.10}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Second footnote in caption of longtable\n') in result
     assert ('This is a reference to the code\\sphinxhyphen{}block in the footnote:\n'
             '{\\hyperref[\\detokenize{index:codeblockinfootnote}]'
             '{\\sphinxcrossref{\\DUrole{std,std-ref}{I am in a footnote}}}}') in result
     assert ('&\n\\sphinxAtStartPar\nThis is one more footnote with some code in it %\n'
-            '\\begin{footnote}[12]\\sphinxAtStartFootnote\n'
+            '\\begin{footnote}[11]\\sphinxAtStartFootnote\n'
             'Third footnote in longtable\n') in result
     assert ('\\end{sphinxVerbatim}\n%\n\\end{footnote}.\n') in result
     assert '\\begin{sphinxVerbatim}[commandchars=\\\\\\{\\}]' in result
-
-
-@pytest.mark.sphinx('latex', testroot='footnotes')
-def test_footnote_referred_multiple_times(app, status, warning):
-    app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
-    print(result)
-    print(status.getvalue())
-    print(warning.getvalue())
-
-    assert ('Explicitly numbered footnote: %\n'
-            '\\begin{footnote}[100]'
-            '\\sphinxAtStartFootnote\nNumbered footnote\n%\n'
-            '\\end{footnote} \\sphinxfootnotemark[100]\n'
-            in result)
-    assert ('Named footnote: %\n'
-            '\\begin{footnote}[13]'
-            '\\sphinxAtStartFootnote\nNamed footnote\n%\n'
-            '\\end{footnote} \\sphinxfootnotemark[13]\n'
-            in result)
 
 
 @pytest.mark.sphinx(
@@ -800,52 +801,51 @@ def test_footnote_referred_multiple_times(app, status, warning):
     confoverrides={'latex_show_urls': 'inline'})
 def test_latex_show_urls_is_inline(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
-    assert ('Same footnote number %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
+    assert ('Same footnote number \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
             'footnote in bar\n%\n\\end{footnote} in bar.rst') in result
     assert ('Auto footnote number %\n\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
             'footnote in baz\n%\n\\end{footnote} in baz.rst') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id38}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id32}}'
             '{\\hyperref[\\detokenize{index:the-section'
             '-with-a-reference-to-authoryear}]'
             '{\\sphinxcrossref{The section with a reference to '
             '\\sphinxcite{index:authoryear}}}}') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id39}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id33}}'
             '{\\hyperref[\\detokenize{index:the-section-with-a-reference-to}]'
             '{\\sphinxcrossref{The section with a reference to }}}' in result)
     assert ('First footnote: %\n\\begin{footnote}[2]\\sphinxAtStartFootnote\n'
             'First\n%\n\\end{footnote}') in result
-    assert ('Second footnote: %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
-            'Second\n%\n\\end{footnote}\n') in result
+    assert ('Second footnote: \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
+            'Second\n%\n\\end{footnote}') in result
     assert '\\sphinxhref{http://sphinx-doc.org/}{Sphinx} (http://sphinx\\sphinxhyphen{}doc.org/)' in result
     assert ('Third footnote: %\n\\begin{footnote}[3]\\sphinxAtStartFootnote\n'
             'Third \\sphinxfootnotemark[4]\n%\n\\end{footnote}%\n'
-            '\\begin{footnotetext}[4]\\sphinxAtStartFootnote\n'
+            '\\begin{footnotetext}[4]'
+            '\\phantomsection\\label{\\thesphinxscope.4}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote inside footnote\n%\n\\end{footnotetext}\\ignorespaces') in result
-    assert ('Fourth footnote: %\n\\begin{footnote}[5]\\sphinxAtStartFootnote\n'
-            'Fourth\n%\n\\end{footnote}\n') in result
     assert ('\\sphinxhref{http://sphinx-doc.org/~test/}{URL including tilde} '
             '(http://sphinx\\sphinxhyphen{}doc.org/\\textasciitilde{}test/)') in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{URL in term} '
-            '(http://sphinx\\sphinxhyphen{}doc.org/)}\n'
-            '\\sphinxAtStartPar\nDescription' in result)
-    assert ('\\sphinxlineitem{Footnote in term \\sphinxfootnotemark[7]}%\n'
-            '\\begin{footnotetext}[7]\\sphinxAtStartFootnote\n')
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{URL in term} '
-            '(http://sphinx\\sphinxhyphen{}doc.org/)}\n'
-            '\\sphinxAtStartPar\nDescription' in result)
-    assert ('\\sphinxlineitem{Footnote in term \\sphinxfootnotemark[7]}%\n'
-            '\\begin{footnotetext}[7]\\sphinxAtStartFootnote\n'
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}{URL in term} '
+            '(http://sphinx\\sphinxhyphen{}doc.org/)}] '
+            '\\leavevmode\n\\sphinxAtStartPar\nDescription' in result)
+    assert ('\\item[{Footnote in term \\sphinxfootnotemark[6]}] '
+            '\\leavevmode%\n\\begin{footnotetext}[6]'
+            '\\phantomsection\\label{\\thesphinxscope.6}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote in term\n%\n\\end{footnotetext}\\ignorespaces '
             '\n\\sphinxAtStartPar\nDescription') in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist} '
-            '(http://sphinx\\sphinxhyphen{}doc.org/)}'
-            '\n\\sphinxAtStartPar\nDescription') in result
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist} '
+            '(http://sphinx\\sphinxhyphen{}doc.org/)}] '
+            '\\leavevmode\n\\sphinxAtStartPar\nDescription') in result
     assert '\\sphinxurl{https://github.com/sphinx-doc/sphinx}\n' in result
     assert ('\\sphinxhref{mailto:sphinx-dev@googlegroups.com}'
             '{sphinx\\sphinxhyphen{}dev@googlegroups.com}') in result
@@ -857,54 +857,59 @@ def test_latex_show_urls_is_inline(app, status, warning):
     confoverrides={'latex_show_urls': 'footnote'})
 def test_latex_show_urls_is_footnote(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
-    assert ('Same footnote number %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
+    assert ('Same footnote number \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
             'footnote in bar\n%\n\\end{footnote} in bar.rst') in result
     assert ('Auto footnote number %\n\\begin{footnote}[2]\\sphinxAtStartFootnote\n'
             'footnote in baz\n%\n\\end{footnote} in baz.rst') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id38}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id32}}'
             '{\\hyperref[\\detokenize{index:the-section-with-a-reference-to-authoryear}]'
             '{\\sphinxcrossref{The section with a reference '
             'to \\sphinxcite{index:authoryear}}}}') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id39}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id33}}'
             '{\\hyperref[\\detokenize{index:the-section-with-a-reference-to}]'
             '{\\sphinxcrossref{The section with a reference to }}}') in result
     assert ('First footnote: %\n\\begin{footnote}[3]\\sphinxAtStartFootnote\n'
             'First\n%\n\\end{footnote}') in result
-    assert ('Second footnote: %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
+    assert ('Second footnote: \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Second\n%\n\\end{footnote}') in result
     assert ('\\sphinxhref{http://sphinx-doc.org/}{Sphinx}'
             '%\n\\begin{footnote}[4]\\sphinxAtStartFootnote\n'
             '\\sphinxnolinkurl{http://sphinx-doc.org/}\n%\n\\end{footnote}') in result
     assert ('Third footnote: %\n\\begin{footnote}[6]\\sphinxAtStartFootnote\n'
             'Third \\sphinxfootnotemark[7]\n%\n\\end{footnote}%\n'
-            '\\begin{footnotetext}[7]\\sphinxAtStartFootnote\n'
+            '\\begin{footnotetext}[7]'
+            '\\phantomsection\\label{\\thesphinxscope.7}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote inside footnote\n%\n'
             '\\end{footnotetext}\\ignorespaces') in result
-    assert ('Fourth footnote: %\n\\begin{footnote}[8]\\sphinxAtStartFootnote\n'
-            'Fourth\n%\n\\end{footnote}\n') in result
     assert ('\\sphinxhref{http://sphinx-doc.org/~test/}{URL including tilde}'
             '%\n\\begin{footnote}[5]\\sphinxAtStartFootnote\n'
             '\\sphinxnolinkurl{http://sphinx-doc.org/~test/}\n%\n\\end{footnote}') in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}'
-            '{URL in term}\\sphinxfootnotemark[10]}%\n'
-            '\\begin{footnotetext}[10]'
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}'
+            '{URL in term}\\sphinxfootnotemark[9]}] '
+            '\\leavevmode%\n\\begin{footnotetext}[9]'
+            '\\phantomsection\\label{\\thesphinxscope.9}%\n'
             '\\sphinxAtStartFootnote\n'
             '\\sphinxnolinkurl{http://sphinx-doc.org/}\n%\n'
             '\\end{footnotetext}\\ignorespaces \n\\sphinxAtStartPar\nDescription') in result
-    assert ('\\sphinxlineitem{Footnote in term \\sphinxfootnotemark[12]}%\n'
-            '\\begin{footnotetext}[12]'
+    assert ('\\item[{Footnote in term \\sphinxfootnotemark[11]}] '
+            '\\leavevmode%\n\\begin{footnotetext}[11]'
+            '\\phantomsection\\label{\\thesphinxscope.11}%\n'
             '\\sphinxAtStartFootnote\n'
             'Footnote in term\n%\n\\end{footnotetext}\\ignorespaces '
             '\n\\sphinxAtStartPar\nDescription') in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist}'
-            '\\sphinxfootnotemark[11]}%\n'
-            '\\begin{footnotetext}[11]'
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist}'
+            '\\sphinxfootnotemark[10]}] '
+            '\\leavevmode%\n\\begin{footnotetext}[10]'
+            '\\phantomsection\\label{\\thesphinxscope.10}%\n'
             '\\sphinxAtStartFootnote\n'
             '\\sphinxnolinkurl{http://sphinx-doc.org/}\n%\n'
             '\\end{footnotetext}\\ignorespaces \n\\sphinxAtStartPar\nDescription') in result
@@ -919,43 +924,47 @@ def test_latex_show_urls_is_footnote(app, status, warning):
     confoverrides={'latex_show_urls': 'no'})
 def test_latex_show_urls_is_no(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
-    assert ('Same footnote number %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
+    assert ('Same footnote number \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
             'footnote in bar\n%\n\\end{footnote} in bar.rst') in result
     assert ('Auto footnote number %\n\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
             'footnote in baz\n%\n\\end{footnote} in baz.rst') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id38}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id32}}'
             '{\\hyperref[\\detokenize{index:the-section-with-a-reference-to-authoryear}]'
             '{\\sphinxcrossref{The section with a reference '
             'to \\sphinxcite{index:authoryear}}}}') in result
-    assert ('\\phantomsection\\label{\\detokenize{index:id39}}'
+    assert ('\\phantomsection\\label{\\detokenize{index:id33}}'
             '{\\hyperref[\\detokenize{index:the-section-with-a-reference-to}]'
             '{\\sphinxcrossref{The section with a reference to }}}' in result)
     assert ('First footnote: %\n\\begin{footnote}[2]\\sphinxAtStartFootnote\n'
             'First\n%\n\\end{footnote}') in result
-    assert ('Second footnote: %\n'
-            '\\begin{footnote}[1]\\sphinxAtStartFootnote\n'
+    assert ('Second footnote: \\sphinxstepexplicit %\n'
+            '\\begin{footnote}[1]\\phantomsection\\label{\\thesphinxscope.1}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Second\n%\n\\end{footnote}') in result
     assert '\\sphinxhref{http://sphinx-doc.org/}{Sphinx}' in result
     assert ('Third footnote: %\n\\begin{footnote}[3]\\sphinxAtStartFootnote\n'
             'Third \\sphinxfootnotemark[4]\n%\n\\end{footnote}%\n'
-            '\\begin{footnotetext}[4]\\sphinxAtStartFootnote\n'
+            '\\begin{footnotetext}[4]'
+            '\\phantomsection\\label{\\thesphinxscope.4}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote inside footnote\n%\n\\end{footnotetext}\\ignorespaces') in result
-    assert ('Fourth footnote: %\n\\begin{footnote}[5]\\sphinxAtStartFootnote\n'
-            'Fourth\n%\n\\end{footnote}\n') in result
     assert '\\sphinxhref{http://sphinx-doc.org/~test/}{URL including tilde}' in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{URL in term}}\n'
-            '\\sphinxAtStartPar\nDescription') in result
-    assert ('\\sphinxlineitem{Footnote in term \\sphinxfootnotemark[7]}%\n'
-            '\\begin{footnotetext}[7]\\sphinxAtStartFootnote\n'
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}{URL in term}}] '
+            '\\leavevmode\n\\sphinxAtStartPar\nDescription') in result
+    assert ('\\item[{Footnote in term \\sphinxfootnotemark[6]}] '
+            '\\leavevmode%\n\\begin{footnotetext}[6]'
+            '\\phantomsection\\label{\\thesphinxscope.6}%\n'
+            '\\sphinxAtStartFootnote\n'
             'Footnote in term\n%\n\\end{footnotetext}\\ignorespaces '
             '\n\\sphinxAtStartPar\nDescription') in result
-    assert ('\\sphinxlineitem{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist}}'
-            '\n\\sphinxAtStartPar\nDescription') in result
+    assert ('\\item[{\\sphinxhref{http://sphinx-doc.org/}{Term in deflist}}] '
+            '\\leavevmode\n\\sphinxAtStartPar\nDescription') in result
     assert ('\\sphinxurl{https://github.com/sphinx-doc/sphinx}\n' in result)
     assert ('\\sphinxhref{mailto:sphinx-dev@googlegroups.com}'
             '{sphinx\\sphinxhyphen{}dev@googlegroups.com}\n') in result
@@ -974,7 +983,7 @@ def test_latex_show_urls_footnote_and_substitutions(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='image-in-section')
 def test_image_in_section(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1000,7 +1009,7 @@ def test_latex_logo_if_not_found(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='toctree-maxdepth')
 def test_toctree_maxdepth_manual(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1017,7 +1026,7 @@ def test_toctree_maxdepth_manual(app, status, warning):
     ]})
 def test_toctree_maxdepth_howto(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1031,7 +1040,7 @@ def test_toctree_maxdepth_howto(app, status, warning):
     confoverrides={'root_doc': 'foo'})
 def test_toctree_not_found(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1045,7 +1054,7 @@ def test_toctree_not_found(app, status, warning):
     confoverrides={'root_doc': 'bar'})
 def test_toctree_without_maxdepth(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1058,7 +1067,7 @@ def test_toctree_without_maxdepth(app, status, warning):
     confoverrides={'root_doc': 'qux'})
 def test_toctree_with_deeper_maxdepth(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1071,7 +1080,7 @@ def test_toctree_with_deeper_maxdepth(app, status, warning):
     confoverrides={'latex_toplevel_sectioning': None})
 def test_latex_toplevel_sectioning_is_None(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1083,7 +1092,7 @@ def test_latex_toplevel_sectioning_is_None(app, status, warning):
     confoverrides={'latex_toplevel_sectioning': 'part'})
 def test_latex_toplevel_sectioning_is_part(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1101,7 +1110,7 @@ def test_latex_toplevel_sectioning_is_part(app, status, warning):
                    ]})
 def test_latex_toplevel_sectioning_is_part_with_howto(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1115,7 +1124,7 @@ def test_latex_toplevel_sectioning_is_part_with_howto(app, status, warning):
     confoverrides={'latex_toplevel_sectioning': 'chapter'})
 def test_latex_toplevel_sectioning_is_chapter(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1131,7 +1140,7 @@ def test_latex_toplevel_sectioning_is_chapter(app, status, warning):
                    ]})
 def test_latex_toplevel_sectioning_is_chapter_with_howto(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1143,7 +1152,7 @@ def test_latex_toplevel_sectioning_is_chapter_with_howto(app, status, warning):
     confoverrides={'latex_toplevel_sectioning': 'section'})
 def test_latex_toplevel_sectioning_is_section(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1154,7 +1163,7 @@ def test_latex_toplevel_sectioning_is_section(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='maxlistdepth')
 def test_maxlistdepth_at_ten(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     print(status.getvalue())
     print(warning.getvalue())
@@ -1165,15 +1174,14 @@ def test_maxlistdepth_at_ten(app, status, warning):
 @pytest.mark.test_params(shared_result='latex-table')
 def test_latex_table_tabulars(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     tables = {}
     for chap in re.split(r'\\(?:section|chapter){', result)[1:]:
         sectname, content = chap.split('}', 1)
-        content = re.sub(r'\\sphinxstepscope', '', content)  # filter a separator
         tables[sectname] = content.strip()
 
     def get_expected(name):
-        return (app.srcdir / 'expects' / (name + '.tex')).read_text(encoding='utf8').strip()
+        return (app.srcdir / 'expects' / (name + '.tex')).read_text().strip()
 
     # simple_table
     actual = tables['simple table']
@@ -1235,15 +1243,14 @@ def test_latex_table_tabulars(app, status, warning):
 @pytest.mark.test_params(shared_result='latex-table')
 def test_latex_table_longtable(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     tables = {}
     for chap in re.split(r'\\(?:section|chapter){', result)[1:]:
         sectname, content = chap.split('}', 1)
-        content = re.sub(r'\\sphinxstepscope', '', content)  # filter a separator
         tables[sectname] = content.strip()
 
     def get_expected(name):
-        return (app.srcdir / 'expects' / (name + '.tex')).read_text(encoding='utf8').strip()
+        return (app.srcdir / 'expects' / (name + '.tex')).read_text().strip()
 
     # longtable
     actual = tables['longtable']
@@ -1295,14 +1302,14 @@ def test_latex_table_longtable(app, status, warning):
 @pytest.mark.test_params(shared_result='latex-table')
 def test_latex_table_complex_tables(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     tables = {}
     for chap in re.split(r'\\(?:section|renewcommand){', result)[1:]:
         sectname, content = chap.split('}', 1)
         tables[sectname] = content.strip()
 
     def get_expected(name):
-        return (app.srcdir / 'expects' / (name + '.tex')).read_text(encoding='utf8').strip()
+        return (app.srcdir / 'expects' / (name + '.tex')).read_text().strip()
 
     # grid table
     actual = tables['grid table']
@@ -1319,7 +1326,7 @@ def test_latex_table_complex_tables(app, status, warning):
                     confoverrides={'templates_path': ['_mytemplates/latex']})
 def test_latex_table_custom_template_caseA(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert 'SALUT LES COPAINS' in result
 
 
@@ -1327,7 +1334,7 @@ def test_latex_table_custom_template_caseA(app, status, warning):
                     confoverrides={'templates_path': ['_mytemplates']})
 def test_latex_table_custom_template_caseB(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert 'SALUT LES COPAINS' not in result
 
 
@@ -1335,14 +1342,14 @@ def test_latex_table_custom_template_caseB(app, status, warning):
 @pytest.mark.test_params(shared_result='latex-table')
 def test_latex_table_custom_template_caseC(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert 'SALUT LES COPAINS' not in result
 
 
 @pytest.mark.sphinx('latex', testroot='directives-raw')
 def test_latex_raw_directive(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
 
     # standard case
     assert 'standalone raw directive (HTML)' not in result
@@ -1358,7 +1365,7 @@ def test_latex_raw_directive(app, status, warning):
 def test_latex_images(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
 
     # images are copied
     assert '\\sphinxincludegraphics{{python-logo}.png}' in result
@@ -1382,7 +1389,7 @@ def test_latex_images(app, status, warning):
 def test_latex_index(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert ('A \\index{famous@\\spxentry{famous}}famous '
             '\\index{equation@\\spxentry{equation}}equation:\n' in result)
     assert ('\n\\index{Einstein@\\spxentry{Einstein}}'
@@ -1396,8 +1403,8 @@ def test_latex_index(app, status, warning):
 def test_latex_equations(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
-    expected = (app.srcdir / 'expects' / 'latex-equations.tex').read_text(encoding='utf8').strip()
+    result = (app.outdir / 'python.tex').read_text()
+    expected = (app.srcdir / 'expects' / 'latex-equations.tex').read_text().strip()
 
     assert expected in result
 
@@ -1406,7 +1413,7 @@ def test_latex_equations(app, status, warning):
 def test_latex_image_in_parsed_literal(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert ('{\\sphinxunactivateextrasandspace \\raisebox{-0.5\\height}'
             '{\\sphinxincludegraphics[height=2.00000cm]{{pic}.png}}'
             '}AFTER') in result
@@ -1416,7 +1423,7 @@ def test_latex_image_in_parsed_literal(app, status, warning):
 def test_latex_nested_enumerated_list(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert ('\\sphinxsetlistlabels{\\arabic}{enumi}{enumii}{}{.}%\n'
             '\\setcounter{enumi}{4}\n' in result)
     assert ('\\sphinxsetlistlabels{\\alph}{enumii}{enumiii}{}{.}%\n'
@@ -1433,7 +1440,7 @@ def test_latex_nested_enumerated_list(app, status, warning):
 def test_latex_thebibliography(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     assert ('\\begin{sphinxthebibliography}{AuthorYe}\n'
             '\\bibitem[AuthorYear]{index:authoryear}\n\\sphinxAtStartPar\n'
@@ -1446,31 +1453,31 @@ def test_latex_thebibliography(app, status, warning):
 def test_latex_glossary(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
-    assert (r'\sphinxlineitem{ähnlich\index{ähnlich@\spxentry{ähnlich}|spxpagem}'
+    result = (app.outdir / 'python.tex').read_text()
+    assert ('\\item[{änhlich\\index{änhlich@\\spxentry{änhlich}|spxpagem}'
             r'\phantomsection'
-            r'\label{\detokenize{index:term-ahnlich}}}' in result)
-    assert (r'\sphinxlineitem{boson\index{boson@\spxentry{boson}|spxpagem}\phantomsection'
-            r'\label{\detokenize{index:term-boson}}}' in result)
-    assert (r'\sphinxlineitem{\sphinxstyleemphasis{fermion}'
+            r'\label{\detokenize{index:term-anhlich}}}] \leavevmode' in result)
+    assert (r'\item[{boson\index{boson@\spxentry{boson}|spxpagem}\phantomsection'
+            r'\label{\detokenize{index:term-boson}}}] \leavevmode' in result)
+    assert (r'\item[{\sphinxstyleemphasis{fermion}'
             r'\index{fermion@\spxentry{fermion}|spxpagem}'
             r'\phantomsection'
-            r'\label{\detokenize{index:term-fermion}}}' in result)
-    assert (r'\sphinxlineitem{tauon\index{tauon@\spxentry{tauon}|spxpagem}\phantomsection'
-            r'\label{\detokenize{index:term-tauon}}}'
-            r'\sphinxlineitem{myon\index{myon@\spxentry{myon}|spxpagem}\phantomsection'
-            r'\label{\detokenize{index:term-myon}}}'
-            r'\sphinxlineitem{electron\index{electron@\spxentry{electron}|spxpagem}\phantomsection'
-            r'\label{\detokenize{index:term-electron}}}' in result)
-    assert (r'\sphinxlineitem{über\index{über@\spxentry{über}|spxpagem}\phantomsection'
-            r'\label{\detokenize{index:term-uber}}}' in result)
+            r'\label{\detokenize{index:term-fermion}}}] \leavevmode' in result)
+    assert (r'\item[{tauon\index{tauon@\spxentry{tauon}|spxpagem}\phantomsection'
+            r'\label{\detokenize{index:term-tauon}}}] \leavevmode'
+            r'\item[{myon\index{myon@\spxentry{myon}|spxpagem}\phantomsection'
+            r'\label{\detokenize{index:term-myon}}}] \leavevmode'
+            r'\item[{electron\index{electron@\spxentry{electron}|spxpagem}\phantomsection'
+            r'\label{\detokenize{index:term-electron}}}] \leavevmode' in result)
+    assert ('\\item[{über\\index{über@\\spxentry{über}|spxpagem}\\phantomsection'
+            r'\label{\detokenize{index:term-uber}}}] \leavevmode' in result)
 
 
 @pytest.mark.sphinx('latex', testroot='latex-labels')
 def test_latex_labels(app, status, warning):
     app.builder.build_all()
 
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
 
     # figures
     assert (r'\caption{labeled figure}'
@@ -1518,7 +1525,7 @@ def test_latex_labels(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='latex-figure-in-admonition')
 def test_latex_figure_in_admonition(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert(r'\begin{figure}[H]' in result)
 
 
@@ -1549,7 +1556,7 @@ def test_includegraphics_oversized(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='index_on_title')
 def test_index_on_title(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert ('\\chapter{Test for index in top level title}\n'
             '\\label{\\detokenize{contents:test-for-index-in-top-level-title}}'
             '\\index{index@\\spxentry{index}}\n'
@@ -1560,7 +1567,7 @@ def test_index_on_title(app, status, warning):
                     confoverrides={'latex_engine': 'pdflatex'})
 def test_texescape_for_non_unicode_supported_engine(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     assert 'script small e: e' in result
     assert 'double struck italic small i: i' in result
@@ -1572,7 +1579,7 @@ def test_texescape_for_non_unicode_supported_engine(app, status, warning):
                     confoverrides={'latex_engine': 'xelatex'})
 def test_texescape_for_unicode_supported_engine(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     print(result)
     assert 'script small e: e' in result
     assert 'double struck italic small i: i' in result
@@ -1584,7 +1591,7 @@ def test_texescape_for_unicode_supported_engine(app, status, warning):
                     confoverrides={'latex_elements': {'extrapackages': r'\usepackage{foo}'}})
 def test_latex_elements_extrapackages(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'test.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'test.tex').read_text()
     assert r'\usepackage{foo}' in result
 
 
@@ -1597,33 +1604,6 @@ def test_latex_nested_tables(app, status, warning):
 @pytest.mark.sphinx('latex', testroot='latex-container')
 def test_latex_container(app, status, warning):
     app.builder.build_all()
-    result = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    result = (app.outdir / 'python.tex').read_text()
     assert r'\begin{sphinxuseclass}{classname}' in result
     assert r'\end{sphinxuseclass}' in result
-
-
-@pytest.mark.sphinx('latex', testroot='reST-code-role')
-def test_latex_code_role(app):
-    app.build()
-    content = (app.outdir / 'python.tex').read_text()
-
-    common_content = (
-        r'\PYG{k}{def} '
-        r'\PYG{n+nf}{foo}'
-        r'\PYG{p}{(}'
-        r'\PYG{l+m+mi}{1} '
-        r'\PYG{o}{+} '
-        r'\PYG{l+m+mi}{2} '
-        r'\PYG{o}{+} '
-        r'\PYG{k+kc}{None} '
-        r'\PYG{o}{+} '
-        r'\PYG{l+s+s2}{\PYGZdq{}}'
-        r'\PYG{l+s+s2}{abc}'
-        r'\PYG{l+s+s2}{\PYGZdq{}}'
-        r'\PYG{p}{)}'
-        r'\PYG{p}{:} '
-        r'\PYG{k}{pass}')
-    assert (r'Inline \sphinxcode{\sphinxupquote{%' + '\n' +
-            common_content + '%\n}} code block') in content
-    assert (r'\begin{sphinxVerbatim}[commandchars=\\\{\}]' +
-            '\n' + common_content + '\n' + r'\end{sphinxVerbatim}') in content

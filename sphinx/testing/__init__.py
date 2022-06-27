@@ -1,7 +1,14 @@
-"""Sphinx test utilities
+"""
+    sphinx.testing
+    ~~~~~~~~~~~~~~
 
-You can require sphinx.testing pytest fixtures in a test module or a conftest
-file like this:
+    Sphinx test utilities
 
-   pytest_plugins = 'sphinx.testing.fixtures'
+    You can require sphinx.testing pytest fixtures in a test module or a conftest
+    file like this:
+
+       pytest_plugins = 'sphinx.testing.fixtures'
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """

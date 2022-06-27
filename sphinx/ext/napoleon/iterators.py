@@ -1,4 +1,14 @@
-"""A collection of helpful iterators."""
+"""
+    sphinx.ext.napoleon.iterators
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    A collection of helpful iterators.
+
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import collections
 from typing import Any, Iterable, Optional

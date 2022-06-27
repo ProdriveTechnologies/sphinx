@@ -1,4 +1,12 @@
-"""modules for backward compatibility"""
+"""
+    sphinx.util.compat
+    ~~~~~~~~~~~~~~~~~~
+
+    modules for backward compatibility
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import sys
 from typing import TYPE_CHECKING, Any, Dict

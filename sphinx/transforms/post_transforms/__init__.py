@@ -1,4 +1,12 @@
-"""Docutils transforms used by Sphinx."""
+"""
+    sphinx.transforms.post_transforms
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Docutils transforms used by Sphinx.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Type, cast
@@ -59,7 +67,7 @@ class ReferencesResolver(SphinxPostTransform):
     default_priority = 10
 
     def run(self, **kwargs: Any) -> None:
-        for node in self.document.findall(addnodes.pending_xref):
+        for node in self.document.traverse(addnodes.pending_xref):
             content = self.find_pending_xref_condition(node, ("resolved", "*"))
             if content:
                 contnode = cast(Element, content[0].deepcopy())
@@ -243,7 +251,7 @@ class SigElementFallbackTransform(SphinxPostTransform):
             self.fallback(addnodes.desc_inline)
 
     def fallback(self, nodeType: Any) -> None:
-        for node in self.document.findall(nodeType):
+        for node in self.document.traverse(nodeType):
             newnode = nodes.inline()
             newnode.update_all_atts(node)
             newnode.extend(node)
@@ -255,7 +263,7 @@ class PropagateDescDomain(SphinxPostTransform):
     default_priority = 200
 
     def run(self, **kwargs: Any) -> None:
-        for node in self.document.findall(addnodes.desc_signature):
+        for node in self.document.traverse(addnodes.desc_signature):
             if node.parent.get('domain'):
                 node['classes'].append(node.parent['domain'])
 

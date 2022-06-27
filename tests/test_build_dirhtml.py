@@ -1,4 +1,12 @@
-"""Test dirhtml builder."""
+"""
+    test_build_dirhtml
+    ~~~~~~~~~~~~~~~~~~
+
+    Test dirhtml builder.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import posixpath
 
@@ -17,7 +25,7 @@ def test_dirhtml(app, status, warning):
     assert (app.outdir / 'foo/foo_2/index.html').exists()
     assert (app.outdir / 'bar/index.html').exists()
 
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert 'href="foo/"' in content
     assert 'href="foo/foo_1/"' in content
     assert 'href="foo/foo_2/"' in content

@@ -1,4 +1,12 @@
-"""The reStructuredText domain."""
+"""
+    sphinx.domains.rst
+    ~~~~~~~~~~~~~~~~~~
+
+    The reStructuredText domain.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 from typing import Any, Dict, Iterator, List, Optional, Tuple, cast
@@ -32,6 +40,13 @@ class ReSTMarkup(ObjectDescription[str]):
     def add_target_and_index(self, name: str, sig: str, signode: desc_signature) -> None:
         node_id = make_id(self.env, self.state.document, self.objtype, name)
         signode['ids'].append(node_id)
+
+        # Assign old styled node_id not to break old hyperlinks (if possible)
+        # Note: Will be removed in Sphinx-5.0 (RemovedInSphinx50Warning)
+        old_node_id = self.make_old_id(name)
+        if old_node_id not in self.state.document.ids and old_node_id not in signode['ids']:
+            signode['ids'].append(old_node_id)
+
         self.state.document.note_explicit_target(signode)
 
         domain = cast(ReSTDomain, self.env.get_domain('rst'))
@@ -135,6 +150,13 @@ class ReSTDirectiveOption(ReSTMarkup):
 
         node_id = make_id(self.env, self.state.document, prefix, name)
         signode['ids'].append(node_id)
+
+        # Assign old styled node_id not to break old hyperlinks (if possible)
+        # Note: Will be removed in Sphinx-5.0 (RemovedInSphinx50Warning)
+        old_node_id = self.make_old_id(name)
+        if old_node_id not in self.state.document.ids and old_node_id not in signode['ids']:
+            signode['ids'].append(old_node_id)
+
         self.state.document.note_explicit_target(signode)
         domain.note_object(self.objtype, objname, node_id, location=signode)
 
@@ -213,7 +235,7 @@ class ReSTDomain(Domain):
         self.objects[objtype, name] = (self.env.docname, node_id)
 
     def clear_doc(self, docname: str) -> None:
-        for (typ, name), (doc, _node_id) in list(self.objects.items()):
+        for (typ, name), (doc, node_id) in list(self.objects.items()):
             if doc == docname:
                 del self.objects[typ, name]
 

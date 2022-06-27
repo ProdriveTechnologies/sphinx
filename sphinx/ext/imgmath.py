@@ -1,4 +1,12 @@
-"""Render math in HTML via dvipng or dvisvgm."""
+"""
+    sphinx.ext.imgmath
+    ~~~~~~~~~~~~~~~~~~
+
+    Render math in HTML via dvipng or dvisvgm.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import posixpath
 import re
@@ -56,8 +64,8 @@ depthsvgcomment_re = re.compile(r'<!-- DEPTH=(-?\d+) -->')
 def read_svg_depth(filename: str) -> int:
     """Read the depth from comment at last line of SVG file
     """
-    with open(filename, encoding="utf-8") as f:
-        for line in f:  # noqa: B007
+    with open(filename) as f:
+        for line in f:
             pass
         # Only last line is checked
         matched = depthsvgcomment_re.match(line)
@@ -69,7 +77,7 @@ def read_svg_depth(filename: str) -> int:
 def write_svg_depth(filename: str, depth: int) -> None:
     """Write the depth to SVG file as a comment at end of file
     """
-    with open(filename, 'a', encoding="utf-8") as f:
+    with open(filename, 'a') as f:
         f.write('\n<!-- DEPTH=%s -->' % depth)
 
 

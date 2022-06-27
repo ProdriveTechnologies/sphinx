@@ -1,16 +1,16 @@
-"""This module implements a simple JavaScript serializer.
+"""
+    sphinx.util.jsdump
+    ~~~~~~~~~~~~~~~~~~
 
-Uses the basestring encode function from simplejson by Bob Ippolito.
+    This module implements a simple JavaScript serializer.
+    Uses the basestring encode function from simplejson by Bob Ippolito.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import re
-import warnings
 from typing import IO, Any, Dict, List, Match, Union
-
-from sphinx.deprecation import RemovedInSphinx70Warning
-
-warnings.warn('"sphinx.util.jsdump" has been deprecated. Please use "json" instead.',
-              RemovedInSphinx70Warning)
 
 _str_re = re.compile(r'"(\\\\|\\"|[^"])*"')
 _int_re = re.compile(r'\d+')

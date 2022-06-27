@@ -1,10 +1,18 @@
-"""Sphinx application class and extensibility interface.
+"""
+    sphinx.application
+    ~~~~~~~~~~~~~~~~~~
 
-Gracefully adapted from the TextPress system by Armin.
+    Sphinx application class and extensibility interface.
+
+    Gracefully adapted from the TextPress system by Armin.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import os
 import pickle
+import platform
 import sys
 import warnings
 from collections import deque
@@ -70,6 +78,7 @@ builtin_extensions = (
     'sphinx.domains.changeset',
     'sphinx.domains.citation',
     'sphinx.domains.cpp',
+    'sphinx.domains.csharp',
     'sphinx.domains.index',
     'sphinx.domains.javascript',
     'sphinx.domains.math',
@@ -187,6 +196,12 @@ class Sphinx:
         # say hello to the world
         logger.info(bold(__('Running Sphinx v%s') % sphinx.__display_version__))
 
+        # notice for parallel build on macOS and py38+
+        if sys.version_info > (3, 8) and platform.system() == 'Darwin' and parallel > 1:
+            logger.info(bold(__("For security reasons, parallel mode is disabled on macOS and "
+                                "python3.8 and above. For more details, please read "
+                                "https://github.com/sphinx-doc/sphinx/issues/6803")))
+
         # status code for command-line application
         self.statuscode = 0
 
@@ -259,7 +274,7 @@ class Sphinx:
         """Load translated strings from the configured localedirs if enabled in
         the configuration.
         """
-        if self.config.language == 'en':
+        if self.config.language is None:
             self.translator, has_translation = locale.init([], None)
         else:
             logger.info(bold(__('loading translations [%s]... ') % self.config.language),
@@ -278,7 +293,8 @@ class Sphinx:
             locale_dirs += [path.join(package_dir, 'locale')]
 
             self.translator, has_translation = locale.init(locale_dirs, self.config.language)
-            if has_translation:
+            if has_translation or self.config.language == 'en':
+                # "en" never needs to be translated
                 logger.info(__('done'))
             else:
                 logger.info(__('not available for built-in messages'))
@@ -328,7 +344,33 @@ class Sphinx:
                 self.builder.compile_update_catalogs()
                 self.builder.build_update()
 
-            self.events.emit('build-finished', None)
+            if self._warncount and self.keep_going:
+                self.statuscode = 1
+
+            status = (__('succeeded') if self.statuscode == 0
+                      else __('finished with problems'))
+            if self._warncount:
+                if self.warningiserror:
+                    if self._warncount == 1:
+                        msg = __('build %s, %s warning (with warnings treated as errors).')
+                    else:
+                        msg = __('build %s, %s warnings (with warnings treated as errors).')
+                else:
+                    if self._warncount == 1:
+                        msg = __('build %s, %s warning.')
+                    else:
+                        msg = __('build %s, %s warnings.')
+
+                logger.info(bold(msg % (status, self._warncount)))
+            else:
+                logger.info(bold(__('build %s.') % status))
+
+            if self.statuscode == 0 and self.builder.epilog:
+                logger.info('')
+                logger.info(self.builder.epilog % {
+                    'outdir': relpath(self.outdir),
+                    'project': self.config.project
+                })
         except Exception as err:
             # delete the saved env to force a fresh build next time
             envfile = path.join(self.doctreedir, ENV_PICKLE_FILENAME)
@@ -336,35 +378,8 @@ class Sphinx:
                 os.unlink(envfile)
             self.events.emit('build-finished', err)
             raise
-
-        if self._warncount and self.keep_going:
-            self.statuscode = 1
-
-        status = (__('succeeded') if self.statuscode == 0
-                  else __('finished with problems'))
-        if self._warncount:
-            if self.warningiserror:
-                if self._warncount == 1:
-                    msg = __('build %s, %s warning (with warnings treated as errors).')
-                else:
-                    msg = __('build %s, %s warnings (with warnings treated as errors).')
-            else:
-                if self._warncount == 1:
-                    msg = __('build %s, %s warning.')
-                else:
-                    msg = __('build %s, %s warnings.')
-
-            logger.info(bold(msg % (status, self._warncount)))
         else:
-            logger.info(bold(__('build %s.') % status))
-
-        if self.statuscode == 0 and self.builder.epilog:
-            logger.info('')
-            logger.info(self.builder.epilog % {
-                'outdir': relpath(self.outdir),
-                'project': self.config.project
-            })
-
+            self.events.emit('build-finished', None)
         self.builder.cleanup()
 
     # ---- general extensibility interface -------------------------------------
@@ -923,31 +938,24 @@ class Sphinx:
         """
         self.registry.add_post_transform(transform)
 
-    def add_js_file(self, filename: str, priority: int = 500,
-                    loading_method: Optional[str] = None, **kwargs: Any) -> None:
+    def add_js_file(self, filename: str, priority: int = 500, **kwargs: Any) -> None:
         """Register a JavaScript file to include in the HTML output.
 
-        :param filename: The filename of the JavaScript file.  It must be relative to the HTML
-                         static path, a full URI with scheme, or ``None`` value.  The ``None``
-                         value is used to create inline ``<script>`` tag.  See the description
-                         of *kwargs* below.
-        :param priority: The priority to determine the order of ``<script>`` tag for
-                         JavaScript files.  See list of "prority range for JavaScript
-                         files" below.  If the priority of the JavaScript files it the same
-                         as others, the JavaScript files will be loaded in order of
-                         registration.
-        :param loading_method: The loading method of the JavaScript file.  ``'async'`` or
-                               ``'defer'`` is allowed.
-        :param kwargs: Extra keyword arguments are included as attributes of the ``<script>``
-                       tag.  A special keyword argument ``body`` is given, its value will be
-                       added between the ``<script>`` tag.
+        Add *filename* to the list of JavaScript files that the default HTML
+        template will include in order of *priority* (ascending).  The filename
+        must be relative to the HTML static path , or a full URI with scheme.
+        If the priority of the JavaScript file is the same as others, the JavaScript
+        files will be included in order of registration.  If the keyword
+        argument ``body`` is given, its value will be added between the
+        ``<script>`` tags. Extra keyword arguments are included as attributes of
+        the ``<script>`` tag.
 
         Example::
 
             app.add_js_file('example.js')
             # => <script src="_static/example.js"></script>
 
-            app.add_js_file('example.js', loading_method="async")
+            app.add_js_file('example.js', async="async")
             # => <script src="_static/example.js" async="async"></script>
 
             app.add_js_file(None, body="var myVariable = 'foo';")
@@ -976,15 +984,7 @@ class Sphinx:
 
         .. versionchanged:: 3.5
            Take priority argument.  Allow to add a JavaScript file to the specific page.
-        .. versionchanged:: 4.4
-           Take loading_method argument.  Allow to change the loading method of the
-           JavaScript file.
         """
-        if loading_method == 'async':
-            kwargs['async'] = 'async'
-        elif loading_method == 'defer':
-            kwargs['defer'] = 'defer'
-
         self.registry.add_js_file(filename, priority=priority, **kwargs)
         if hasattr(self.builder, 'add_js_file'):
             self.builder.add_js_file(filename, priority=priority, **kwargs)  # type: ignore
@@ -992,14 +992,12 @@ class Sphinx:
     def add_css_file(self, filename: str, priority: int = 500, **kwargs: Any) -> None:
         """Register a stylesheet to include in the HTML output.
 
-        :param filename: The filename of the CSS file.  It must be relative to the HTML
-                         static path, or a full URI with scheme.
-        :param priority: The priority to determine the order of ``<link>`` tag for the
-                         CSS files.  See list of "prority range for CSS files" below.
-                         If the priority of the CSS files it the same as others, the
-                         CSS files will be loaded in order of registration.
-        :param kwargs: Extra keyword arguments are included as attributes of the ``<link>``
-                       tag.
+        Add *filename* to the list of CSS files that the default HTML template
+        will include in order of *priority* (ascending).  The filename must be
+        relative to the HTML static path, or a full URI with scheme.  If the
+        priority of the CSS file is the same as others, the CSS files will be
+        included in order of registration.  The keyword arguments are also
+        accepted for attributes of ``<link>`` tag.
 
         Example::
 

@@ -1,4 +1,12 @@
-"""Tests the Python Domain"""
+"""
+    test_domain_py
+    ~~~~~~~~~~~~~~
+
+    Tests the Python Domain
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 import sys
@@ -71,7 +79,7 @@ def test_domain_py_xrefs(app, status, warning):
         assert_node(node, **attributes)
 
     doctree = app.env.get_doctree('roles')
-    refnodes = list(doctree.findall(pending_xref))
+    refnodes = list(doctree.traverse(pending_xref))
     assert_refnode(refnodes[0], None, None, 'TopLevel', 'class')
     assert_refnode(refnodes[1], None, None, 'top_level', 'meth')
     assert_refnode(refnodes[2], None, 'NestedParentA', 'child_1', 'meth')
@@ -89,7 +97,7 @@ def test_domain_py_xrefs(app, status, warning):
     assert len(refnodes) == 13
 
     doctree = app.env.get_doctree('module')
-    refnodes = list(doctree.findall(pending_xref))
+    refnodes = list(doctree.traverse(pending_xref))
     assert_refnode(refnodes[0], 'module_a.submodule', None,
                    'ModTopLevel', 'class')
     assert_refnode(refnodes[1], 'module_a.submodule', 'ModTopLevel',
@@ -118,7 +126,7 @@ def test_domain_py_xrefs(app, status, warning):
     assert len(refnodes) == 16
 
     doctree = app.env.get_doctree('module_option')
-    refnodes = list(doctree.findall(pending_xref))
+    refnodes = list(doctree.traverse(pending_xref))
     print(refnodes)
     print(refnodes[0])
     print(refnodes[1])
@@ -131,7 +139,7 @@ def test_domain_py_xrefs(app, status, warning):
 def test_domain_py_xrefs_abbreviations(app, status, warning):
     app.builder.build_all()
 
-    content = (app.outdir / 'abbr.html').read_text(encoding='utf8')
+    content = (app.outdir / 'abbr.html').read_text()
     assert re.search(r'normal: <a .* href="module.html#module_a.submodule.ModTopLevel.'
                      r'mod_child_1" .*><.*>module_a.submodule.ModTopLevel.mod_child_1\(\)'
                      r'<.*></a>',
@@ -186,7 +194,7 @@ def test_domain_py_objects(app, status, warning):
 def test_resolve_xref_for_properties(app, status, warning):
     app.builder.build_all()
 
-    content = (app.outdir / 'module.html').read_text(encoding='utf8')
+    content = (app.outdir / 'module.html').read_text()
     assert ('Link to <a class="reference internal" href="#module_a.submodule.ModTopLevel.prop"'
             ' title="module_a.submodule.ModTopLevel.prop">'
             '<code class="xref py py-attr docutils literal notranslate"><span class="pre">'
@@ -234,7 +242,7 @@ def test_domain_py_find_obj(app, status, warning):
 def test_domain_py_canonical(app, status, warning):
     app.builder.build_all()
 
-    content = (app.outdir / 'canonical.html').read_text(encoding='utf8')
+    content = (app.outdir / 'canonical.html').read_text()
     assert ('<a class="reference internal" href="#canonical.Foo" title="canonical.Foo">'
             '<code class="xref py py-class docutils literal notranslate">'
             '<span class="pre">Foo</span></code></a>' in content)
@@ -306,6 +314,7 @@ def test_parse_annotation(app):
                           [desc_sig_punctuation, "]"]))
 
     doctree = _parse_annotation("Callable[[int, int], int]", app.env)
+    print(doctree)
     assert_node(doctree, ([pending_xref, "Callable"],
                           [desc_sig_punctuation, "["],
                           [desc_sig_punctuation, "["],
@@ -340,29 +349,6 @@ def test_parse_annotation(app):
     assert_node(doctree, ([pending_xref, "None"],))
     assert_node(doctree[0], pending_xref, refdomain="py", reftype="obj", reftarget="None")
 
-    # Literal type makes an object-reference (not a class reference)
-    doctree = _parse_annotation("typing.Literal['a', 'b']", app.env)
-    assert_node(doctree, ([pending_xref, "Literal"],
-                          [desc_sig_punctuation, "["],
-                          [desc_sig_literal_string, "'a'"],
-                          [desc_sig_punctuation, ","],
-                          desc_sig_space,
-                          [desc_sig_literal_string, "'b'"],
-                          [desc_sig_punctuation, "]"]))
-    assert_node(doctree[0], pending_xref, refdomain="py", reftype="obj", reftarget="typing.Literal")
-
-
-def test_parse_annotation_suppress(app):
-    doctree = _parse_annotation("~typing.Dict[str, str]", app.env)
-    assert_node(doctree, ([pending_xref, "Dict"],
-                          [desc_sig_punctuation, "["],
-                          [pending_xref, "str"],
-                          [desc_sig_punctuation, ","],
-                          desc_sig_space,
-                          [pending_xref, "str"],
-                          [desc_sig_punctuation, "]"]))
-    assert_node(doctree[0], pending_xref, refdomain="py", reftype="obj", reftarget="typing.Dict")
-
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason='python 3.8+ is required.')
 def test_parse_annotation_Literal(app):
@@ -376,7 +362,7 @@ def test_parse_annotation_Literal(app):
                           [desc_sig_punctuation, "]"]))
 
     doctree = _parse_annotation("typing.Literal[0, 1, 'abc']", app.env)
-    assert_node(doctree, ([pending_xref, "Literal"],
+    assert_node(doctree, ([pending_xref, "typing.Literal"],
                           [desc_sig_punctuation, "["],
                           [desc_sig_literal_number, "0"],
                           [desc_sig_punctuation, ","],
@@ -999,9 +985,7 @@ def test_info_field_list(app):
     text = (".. py:module:: example\n"
             ".. py:class:: Class\n"
             "\n"
-            "   :meta blah: this meta-field must not show up in the toc-tree\n"
             "   :param str name: blah blah\n"
-            "   :meta another meta field:\n"
             "   :param age: blah blah\n"
             "   :type age: int\n"
             "   :param items: blah blah\n"
@@ -1186,49 +1170,6 @@ def test_info_field_list_var(app):
                 refdomain="py", reftype="class", reftarget="int", **{"py:class": "Class"})
 
 
-def test_type_field(app):
-    text = (".. py:data:: var1\n"
-            "   :type: .int\n"
-            ".. py:data:: var2\n"
-            "   :type: ~builtins.int\n"
-            ".. py:data:: var3\n"
-            "   :type: typing.Optional[typing.Tuple[int, typing.Any]]\n")
-    doctree = restructuredtext.parse(app, text)
-    assert_node(doctree, (addnodes.index,
-                          [desc, ([desc_signature, ([desc_name, "var1"],
-                                                    [desc_annotation, ([desc_sig_punctuation, ':'],
-                                                                       desc_sig_space,
-                                                                       [pending_xref, "int"])])],
-                                  [desc_content, ()])],
-                          addnodes.index,
-                          [desc, ([desc_signature, ([desc_name, "var2"],
-                                                    [desc_annotation, ([desc_sig_punctuation, ':'],
-                                                                       desc_sig_space,
-                                                                       [pending_xref, "int"])])],
-                                  [desc_content, ()])],
-                          addnodes.index,
-                          [desc, ([desc_signature, ([desc_name, "var3"],
-                                                    [desc_annotation, ([desc_sig_punctuation, ":"],
-                                                                       desc_sig_space,
-                                                                       [pending_xref, "Optional"],
-                                                                       [desc_sig_punctuation, "["],
-                                                                       [pending_xref, "Tuple"],
-                                                                       [desc_sig_punctuation, "["],
-                                                                       [pending_xref, "int"],
-                                                                       [desc_sig_punctuation, ","],
-                                                                       desc_sig_space,
-                                                                       [pending_xref, "Any"],
-                                                                       [desc_sig_punctuation, "]"],
-                                                                       [desc_sig_punctuation, "]"])])],
-                                  [desc_content, ()])]))
-    assert_node(doctree[1][0][1][2], pending_xref, reftarget='int', refspecific=True)
-    assert_node(doctree[3][0][1][2], pending_xref, reftarget='builtins.int', refspecific=False)
-    assert_node(doctree[5][0][1][2], pending_xref, reftarget='typing.Optional', refspecific=False)
-    assert_node(doctree[5][0][1][4], pending_xref, reftarget='typing.Tuple', refspecific=False)
-    assert_node(doctree[5][0][1][6], pending_xref, reftarget='int', refspecific=False)
-    assert_node(doctree[5][0][1][9], pending_xref, reftarget='typing.Any', refspecific=False)
-
-
 @pytest.mark.sphinx(freshenv=True)
 def test_module_index(app):
     text = (".. py:module:: docutils\n"
@@ -1317,7 +1258,7 @@ def test_noindexentry(app):
 @pytest.mark.sphinx('html', testroot='domain-py-python_use_unqualified_type_names')
 def test_python_python_use_unqualified_type_names(app, status, warning):
     app.build()
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert ('<span class="n"><a class="reference internal" href="#foo.Name" title="foo.Name">'
             '<span class="pre">Name</span></a></span>' in content)
     assert '<span class="n"><span class="pre">foo.Age</span></span>' in content
@@ -1330,7 +1271,7 @@ def test_python_python_use_unqualified_type_names(app, status, warning):
                     confoverrides={'python_use_unqualified_type_names': False})
 def test_python_python_use_unqualified_type_names_disabled(app, status, warning):
     app.build()
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert ('<span class="n"><a class="reference internal" href="#foo.Name" title="foo.Name">'
             '<span class="pre">foo.Name</span></a></span>' in content)
     assert '<span class="n"><span class="pre">foo.Age</span></span>' in content

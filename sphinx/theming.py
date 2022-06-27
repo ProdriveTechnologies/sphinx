@@ -1,4 +1,12 @@
-"""Theming support for HTML builders."""
+"""
+    sphinx.theming
+    ~~~~~~~~~~~~~~
+
+    Theming support for HTML builders.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import configparser
 import os
@@ -8,10 +16,7 @@ from os import path
 from typing import TYPE_CHECKING, Any, Dict, List
 from zipfile import ZipFile
 
-try:  # Python < 3.10 (backport)
-    from importlib_metadata import entry_points
-except ImportError:
-    from importlib.metadata import entry_points
+import pkg_resources
 
 from sphinx import package_dir
 from sphinx.errors import ThemeError
@@ -64,7 +69,7 @@ class Theme:
             extract_zip(theme_path, self.themedir)
 
         self.config = configparser.RawConfigParser()
-        self.config.read(path.join(self.themedir, THEMECONF), encoding='utf-8')
+        self.config.read(path.join(self.themedir, THEMECONF))
 
         try:
             inherit = self.config.get('theme', 'inherit')
@@ -196,13 +201,12 @@ class HTMLThemeFactory:
         Sphinx refers to ``sphinx_themes`` entry_points.
         """
         # look up for new styled entry_points at first
-        theme_entry_points = entry_points(group='sphinx.html_themes')
+        entry_points = pkg_resources.iter_entry_points('sphinx.html_themes', name)
         try:
-            entry_point = theme_entry_points[name]
-            self.app.registry.load_extension(self.app, entry_point.module)
-            self.app.config.post_init_values()
+            entry_point = next(entry_points)
+            self.app.registry.load_extension(self.app, entry_point.module_name)
             return
-        except KeyError:
+        except StopIteration:
             pass
 
     def find_themes(self, theme_path: str) -> Dict[str, str]:

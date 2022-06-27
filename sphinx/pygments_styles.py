@@ -1,4 +1,12 @@
-"""Sphinx theme specific highlighting styles."""
+"""
+    sphinx.pygments_styles
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    Sphinx theme specific highlighting styles.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from pygments.style import Style
 from pygments.styles.friendly import FriendlyStyle

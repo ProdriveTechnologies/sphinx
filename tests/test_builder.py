@@ -1,4 +1,12 @@
-"""Test the Builder class."""
+"""
+    test_builder
+    ~~~~~~~~
+
+    Test the Builder class.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 import pytest
 
 
@@ -13,7 +21,7 @@ def test_incremental_reading(app):
     assert 'subdir/excluded' not in app.env.found_docs
 
     # before second reading, add, modify and remove source files
-    (app.srcdir / 'new.txt').write_text('New file\n========\n', encoding='utf8')
+    (app.srcdir / 'new.txt').write_text('New file\n========\n')
     app.env.all_docs['index'] = 0  # mark as modified
     (app.srcdir / 'autodoc.txt').unlink()
 

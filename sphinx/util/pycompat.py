@@ -1,4 +1,12 @@
-"""Stuff for Python version compatibility."""
+"""
+    sphinx.util.pycompat
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Stuff for Python version compatibility.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import warnings
 from typing import Any, Callable

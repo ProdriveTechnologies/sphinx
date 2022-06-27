@@ -75,7 +75,7 @@ and assuming ``docs/index.rst`` contained the following:
 
 If you run the following:
 
-.. code-block:: console
+.. code-block:: bash
 
     $ PYTHONPATH=. sphinx-autogen docs/index.rst
 

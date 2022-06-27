@@ -1,11 +1,17 @@
-"""Docutils transforms used by Sphinx when reading documents."""
+"""
+    sphinx.transforms
+    ~~~~~~~~~~~~~~~~~
+
+    Docutils transforms used by Sphinx when reading documents.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
-import unicodedata
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Tuple, cast
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Optional, Tuple
 
-import docutils
 from docutils import nodes
 from docutils.nodes import Element, Node, Text
 from docutils.transforms import Transform, Transformer
@@ -18,7 +24,7 @@ from sphinx import addnodes
 from sphinx.config import Config
 from sphinx.deprecation import RemovedInSphinx60Warning
 from sphinx.locale import _, __
-from sphinx.util import logging
+from sphinx.util import docutils, logging
 from sphinx.util.docutils import new_document
 from sphinx.util.i18n import format_date
 from sphinx.util.nodes import NodeMatcher, apply_source_workaround, is_smartquotable
@@ -101,7 +107,7 @@ class DefaultSubstitutions(SphinxTransform):
     def apply(self, **kwargs: Any) -> None:
         # only handle those not otherwise defined in the document
         to_handle = default_substitutions - set(self.document.substitution_defs)
-        for ref in self.document.findall(nodes.substitution_reference):
+        for ref in self.document.traverse(nodes.substitution_reference):
             refname = ref['refname']
             if refname in to_handle:
                 text = self.config[refname]
@@ -109,7 +115,7 @@ class DefaultSubstitutions(SphinxTransform):
                     # special handling: can also specify a strftime format
                     text = format_date(self.config.today_fmt or _('%b %d, %Y'),
                                        language=self.config.language)
-                ref.replace_self(nodes.Text(text))
+                ref.replace_self(nodes.Text(text, text))
 
 
 class MoveModuleTargets(SphinxTransform):
@@ -122,7 +128,7 @@ class MoveModuleTargets(SphinxTransform):
     default_priority = 210
 
     def apply(self, **kwargs: Any) -> None:
-        for node in list(self.document.findall(nodes.target)):
+        for node in list(self.document.traverse(nodes.target)):
             if not node['ids']:
                 continue
             if ('ismod' in node and
@@ -141,12 +147,12 @@ class HandleCodeBlocks(SphinxTransform):
 
     def apply(self, **kwargs: Any) -> None:
         # move doctest blocks out of blockquotes
-        for node in self.document.findall(nodes.block_quote):
+        for node in self.document.traverse(nodes.block_quote):
             if all(isinstance(child, nodes.doctest_block) for child
                    in node.children):
                 node.replace_self(node.children)
         # combine successive doctest blocks
-        # for node in self.document.findall(nodes.doctest_block):
+        # for node in self.document.traverse(nodes.doctest_block):
         #    if node not in node.parent.children:
         #        continue
         #    parindex = node.parent.index(node)
@@ -166,7 +172,7 @@ class AutoNumbering(SphinxTransform):
     def apply(self, **kwargs: Any) -> None:
         domain: StandardDomain = self.env.get_domain('std')
 
-        for node in self.document.findall(nodes.Element):
+        for node in self.document.traverse(nodes.Element):
             if (domain.is_enumerable_node(node) and
                     domain.get_numfig_title(node) is not None and
                     node['ids'] == []):
@@ -180,7 +186,7 @@ class SortIds(SphinxTransform):
     default_priority = 261
 
     def apply(self, **kwargs: Any) -> None:
-        for node in self.document.findall(nodes.section):
+        for node in self.document.traverse(nodes.section):
             if len(node['ids']) > 1 and node['ids'][0].startswith('id'):
                 node['ids'] = node['ids'][1:] + [node['ids'][0]]
 
@@ -201,8 +207,8 @@ class ApplySourceWorkaround(SphinxTransform):
     default_priority = 10
 
     def apply(self, **kwargs: Any) -> None:
-        for node in self.document.findall():  # type: Node
-            if isinstance(node, (nodes.TextElement, nodes.image, nodes.topic)):
+        for node in self.document.traverse():  # type: Node
+            if isinstance(node, (nodes.TextElement, nodes.image)):
                 apply_source_workaround(node)
 
 
@@ -213,7 +219,7 @@ class AutoIndexUpgrader(SphinxTransform):
     default_priority = 210
 
     def apply(self, **kwargs: Any) -> None:
-        for node in self.document.findall(addnodes.index):
+        for node in self.document.traverse(addnodes.index):
             if 'entries' in node and any(len(entry) == 4 for entry in node['entries']):
                 msg = __('4 column based index found. '
                          'It might be a bug of extensions you use: %r') % node['entries']
@@ -238,7 +244,7 @@ class ExtraTranslatableNodes(SphinxTransform):
         def is_translatable_node(node: Node) -> bool:
             return isinstance(node, tuple(target_nodes))
 
-        for node in self.document.findall(is_translatable_node):  # type: Element
+        for node in self.document.traverse(is_translatable_node):  # type: Element
             node['translatable'] = True
 
 
@@ -270,7 +276,7 @@ class DoctestTransform(SphinxTransform):
     default_priority = 500
 
     def apply(self, **kwargs: Any) -> None:
-        for node in self.document.findall(nodes.doctest_block):
+        for node in self.document.traverse(nodes.doctest_block):
             node['classes'].append('doctest')
 
 
@@ -287,7 +293,7 @@ class FigureAligner(SphinxTransform):
 
     def apply(self, **kwargs: Any) -> None:
         matcher = NodeMatcher(nodes.table, nodes.figure)
-        for node in self.document.findall(matcher):  # type: Element
+        for node in self.document.traverse(matcher):  # type: Element
             node.setdefault('align', 'default')
 
 
@@ -297,7 +303,7 @@ class FilterSystemMessages(SphinxTransform):
 
     def apply(self, **kwargs: Any) -> None:
         filterlevel = 2 if self.config.keep_warnings else 5
-        for node in list(self.document.findall(nodes.system_message)):
+        for node in list(self.document.traverse(nodes.system_message)):
             if node['level'] < filterlevel:
                 logger.debug('%s [filtered system message]', node.astext())
                 node.parent.remove(node)
@@ -386,7 +392,7 @@ class ManpageLink(SphinxTransform):
     default_priority = 999
 
     def apply(self, **kwargs: Any) -> None:
-        for node in self.document.findall(addnodes.manpage):
+        for node in self.document.traverse(addnodes.manpage):
             manpage = ' '.join([str(x) for x in node.children
                                 if isinstance(x, nodes.Text)])
             pattern = r'^(?P<path>(?P<page>.+)[\(\.](?P<section>[1-9]\w*)?\)?)$'  # noqa
@@ -397,24 +403,6 @@ class ManpageLink(SphinxTransform):
             if r:
                 info = r.groupdict()
             node.attributes.update(info)
-
-
-class GlossarySorter(SphinxTransform):
-    """Sort glossaries that have the ``sorted`` flag."""
-    # This must be done after i18n, therefore not right
-    # away in the glossary directive.
-    default_priority = 500
-
-    def apply(self, **kwargs: Any) -> None:
-        for glossary in self.document.findall(addnodes.glossary):
-            if glossary["sorted"]:
-                definition_list = cast(nodes.definition_list, glossary[0])
-                definition_list[:] = sorted(
-                    definition_list,
-                    key=lambda item: unicodedata.normalize(
-                        'NFD',
-                        cast(nodes.term, item)[0].astext().lower())
-                )
 
 
 def setup(app: "Sphinx") -> Dict[str, Any]:
@@ -432,7 +420,6 @@ def setup(app: "Sphinx") -> Dict[str, Any]:
     app.add_transform(SphinxSmartQuotes)
     app.add_transform(DoctreeReadEvent)
     app.add_transform(ManpageLink)
-    app.add_transform(GlossarySorter)
 
     return {
         'version': 'builtin',

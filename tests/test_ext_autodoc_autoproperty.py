@@ -1,7 +1,12 @@
-"""Test the autodoc extension.
+"""
+    test_ext_autodoc_autoproperty
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This tests mainly the Documenters; the auto directives are tested in a test
-source file translated by test_build.
+    Test the autodoc extension.  This tests mainly the Documenters; the auto
+    directives are tested in a test source file translated by test_build.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import sys

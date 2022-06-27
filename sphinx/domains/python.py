@@ -1,4 +1,12 @@
-"""The Python domain."""
+"""
+    sphinx.domains.python
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    The Python domain.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import builtins
 import inspect
@@ -18,7 +26,7 @@ from sphinx import addnodes
 from sphinx.addnodes import desc_signature, pending_xref, pending_xref_condition
 from sphinx.application import Sphinx
 from sphinx.builders import Builder
-from sphinx.deprecation import RemovedInSphinx60Warning
+from sphinx.deprecation import RemovedInSphinx50Warning, RemovedInSphinx60Warning
 from sphinx.directives import ObjectDescription
 from sphinx.domains import Domain, Index, IndexEntry, ObjType
 from sphinx.environment import BuildEnvironment
@@ -72,60 +80,34 @@ class ModuleEntry(NamedTuple):
     deprecated: bool
 
 
-def parse_reftarget(reftarget: str, suppress_prefix: bool = False
-                    ) -> Tuple[str, str, str, bool]:
-    """Parse a type string and return (reftype, reftarget, title, refspecific flag)"""
-    refspecific = False
-    if reftarget.startswith('.'):
-        reftarget = reftarget[1:]
-        title = reftarget
-        refspecific = True
-    elif reftarget.startswith('~'):
-        reftarget = reftarget[1:]
-        title = reftarget.split('.')[-1]
-    elif suppress_prefix:
-        title = reftarget.split('.')[-1]
-    elif reftarget.startswith('typing.'):
-        title = reftarget[7:]
-    else:
-        title = reftarget
-
-    if reftarget == 'None' or reftarget.startswith('typing.'):
-        # typing module provides non-class types.  Obj reference is good to refer them.
+def type_to_xref(text: str, env: BuildEnvironment = None) -> addnodes.pending_xref:
+    """Convert a type string to a cross reference node."""
+    if text == 'None':
         reftype = 'obj'
     else:
         reftype = 'class'
 
-    return reftype, reftarget, title, refspecific
-
-
-def type_to_xref(target: str, env: BuildEnvironment = None, suppress_prefix: bool = False
-                 ) -> addnodes.pending_xref:
-    """Convert a type string to a cross reference node."""
     if env:
         kwargs = {'py:module': env.ref_context.get('py:module'),
                   'py:class': env.ref_context.get('py:class')}
     else:
         kwargs = {}
 
-    reftype, target, title, refspecific = parse_reftarget(target, suppress_prefix)
-
     if env.config.python_use_unqualified_type_names:
         # Note: It would be better to use qualname to describe the object to support support
         # nested classes.  But python domain can't access the real python object because this
         # module should work not-dynamically.
-        shortname = title.split('.')[-1]
+        shortname = text.split('.')[-1]
         contnodes: List[Node] = [pending_xref_condition('', shortname, condition='resolved'),
-                                 pending_xref_condition('', title, condition='*')]
+                                 pending_xref_condition('', text, condition='*')]
     else:
-        contnodes = [nodes.Text(title)]
+        contnodes = [nodes.Text(text)]
 
     return pending_xref('', *contnodes,
-                        refdomain='py', reftype=reftype, reftarget=target,
-                        refspecific=refspecific, **kwargs)
+                        refdomain='py', reftype=reftype, reftarget=text, **kwargs)
 
 
-def _parse_annotation(annotation: str, env: BuildEnvironment) -> List[Node]:
+def _parse_annotation(annotation: str, env: BuildEnvironment = None) -> List[Node]:
     """Parse type annotation."""
     def unparse(node: ast.AST) -> List[Node]:
         if isinstance(node, ast.Attribute):
@@ -156,8 +138,6 @@ def _parse_annotation(annotation: str, env: BuildEnvironment) -> List[Node]:
             return unparse(node.value)
         elif isinstance(node, ast.Index):
             return unparse(node.value)
-        elif isinstance(node, ast.Invert):
-            return [addnodes.desc_sig_punctuation('', '~')]
         elif isinstance(node, ast.List):
             result = [addnodes.desc_sig_punctuation('', '[')]
             if node.elts:
@@ -188,8 +168,6 @@ def _parse_annotation(annotation: str, env: BuildEnvironment) -> List[Node]:
                     if isinstance(subnode, nodes.Text):
                         result[i] = nodes.literal('', '', subnode)
             return result
-        elif isinstance(node, ast.UnaryOp):
-            return unparse(node.op) + unparse(node.operand)
         elif isinstance(node, ast.Tuple):
             if node.elts:
                 result = []
@@ -206,34 +184,25 @@ def _parse_annotation(annotation: str, env: BuildEnvironment) -> List[Node]:
             return result
         else:
             if sys.version_info < (3, 8):
-                if isinstance(node, ast.Bytes):
-                    return [addnodes.desc_sig_literal_string('', repr(node.s))]
-                elif isinstance(node, ast.Ellipsis):
+                if isinstance(node, ast.Ellipsis):
                     return [addnodes.desc_sig_punctuation('', "...")]
                 elif isinstance(node, ast.NameConstant):
                     return [nodes.Text(node.value)]
-                elif isinstance(node, ast.Num):
-                    return [addnodes.desc_sig_literal_string('', repr(node.n))]
-                elif isinstance(node, ast.Str):
-                    return [addnodes.desc_sig_literal_string('', repr(node.s))]
 
             raise SyntaxError  # unsupported syntax
 
+    if env is None:
+        warnings.warn("The env parameter for _parse_annotation becomes required now.",
+                      RemovedInSphinx50Warning, stacklevel=2)
+
     try:
         tree = ast_parse(annotation)
-        result: List[Node] = []
-        for node in unparse(tree):
+        result = unparse(tree)
+        for i, node in enumerate(result):
             if isinstance(node, nodes.literal):
-                result.append(node[0])
+                result[i] = node[0]
             elif isinstance(node, nodes.Text) and node.strip():
-                if (result and isinstance(result[-1], addnodes.desc_sig_punctuation) and
-                        result[-1].astext() == '~'):
-                    result.pop()
-                    result.append(type_to_xref(str(node), env, suppress_prefix=True))
-                else:
-                    result.append(type_to_xref(str(node), env))
-            else:
-                result.append(node)
+                result[i] = type_to_xref(str(node), env)
         return result
     except SyntaxError:
         return [type_to_xref(annotation, env)]
@@ -350,27 +319,27 @@ class PyXrefMixin:
         result = super().make_xref(rolename, domain, target,  # type: ignore
                                    innernode, contnode,
                                    env, inliner=None, location=None)
-        if isinstance(result, pending_xref):
-            result['refspecific'] = True
-            result['py:module'] = env.ref_context.get('py:module')
-            result['py:class'] = env.ref_context.get('py:class')
+        result['refspecific'] = True
+        result['py:module'] = env.ref_context.get('py:module')
+        result['py:class'] = env.ref_context.get('py:class')
+        if target.startswith(('.', '~')):
+            prefix, result['reftarget'] = target[0], target[1:]
+            if prefix == '.':
+                text = target[1:]
+            elif prefix == '~':
+                text = target.split('.')[-1]
+            for node in list(result.traverse(nodes.Text)):
+                node.parent[node.parent.index(node)] = nodes.Text(text)
+                break
+        elif isinstance(result, pending_xref) and env.config.python_use_unqualified_type_names:
+            children = result.children
+            result.clear()
 
-            reftype, reftarget, reftitle, _ = parse_reftarget(target)
-            if reftarget != reftitle:
-                result['reftype'] = reftype
-                result['reftarget'] = reftarget
-
-                result.clear()
-                result += innernode(reftitle, reftitle)
-            elif env.config.python_use_unqualified_type_names:
-                children = result.children
-                result.clear()
-
-                shortname = target.split('.')[-1]
-                textnode = innernode('', shortname)
-                contnodes = [pending_xref_condition('', '', textnode, condition='resolved'),
-                             pending_xref_condition('', '', *children, condition='*')]
-                result.extend(contnodes)
+            shortname = target.split('.')[-1]
+            textnode = innernode('', shortname)
+            contnodes = [pending_xref_condition('', '', textnode, condition='resolved'),
+                         pending_xref_condition('', '', *children, condition='*')]
+            result.extend(contnodes)
 
         return result
 
@@ -403,7 +372,16 @@ class PyXrefMixin:
 
 
 class PyField(PyXrefMixin, Field):
-    pass
+    def make_xref(self, rolename: str, domain: str, target: str,
+                  innernode: Type[TextlikeNode] = nodes.emphasis,
+                  contnode: Node = None, env: BuildEnvironment = None,
+                  inliner: Inliner = None, location: Node = None) -> Node:
+        if rolename == 'class' and target == 'None':
+            # None is not a type, so use obj role instead.
+            rolename = 'obj'
+
+        return super().make_xref(rolename, domain, target, innernode, contnode,
+                                 env, inliner, location)
 
 
 class PyGroupedField(PyXrefMixin, GroupedField):
@@ -411,7 +389,16 @@ class PyGroupedField(PyXrefMixin, GroupedField):
 
 
 class PyTypedField(PyXrefMixin, TypedField):
-    pass
+    def make_xref(self, rolename: str, domain: str, target: str,
+                  innernode: Type[TextlikeNode] = nodes.emphasis,
+                  contnode: Node = None, env: BuildEnvironment = None,
+                  inliner: Inliner = None, location: Node = None) -> Node:
+        if rolename == 'class' and target == 'None':
+            # None is not a type, so use obj role instead.
+            rolename = 'obj'
+
+        return super().make_xref(rolename, domain, target, innernode, contnode,
+                                 env, inliner, location)
 
 
 class PyObject(ObjectDescription[Tuple[str, str]]):
@@ -565,6 +552,12 @@ class PyObject(ObjectDescription[Tuple[str, str]]):
         fullname = (modname + '.' if modname else '') + name_cls[0]
         node_id = make_id(self.env, self.state.document, '', fullname)
         signode['ids'].append(node_id)
+
+        # Assign old styled node_id(fullname) not to break old hyperlinks (if possible)
+        # Note: Will removed in Sphinx-5.0  (RemovedInSphinx50Warning)
+        if node_id != fullname and fullname not in self.state.document.ids:
+            signode['ids'].append(fullname)
+
         self.state.document.note_explicit_target(signode)
 
         domain = cast(PythonDomain, self.env.get_domain('py'))
@@ -960,6 +953,29 @@ class PyProperty(PyObject):
         return _('%s (%s property)') % (attrname, clsname)
 
 
+class PyDecoratorMixin:
+    """
+    Mixin for decorator directives.
+    """
+    def handle_signature(self, sig: str, signode: desc_signature) -> Tuple[str, str]:
+        for cls in self.__class__.__mro__:
+            if cls.__name__ != 'DirectiveAdapter':
+                warnings.warn('PyDecoratorMixin is deprecated. '
+                              'Please check the implementation of %s' % cls,
+                              RemovedInSphinx50Warning, stacklevel=2)
+                break
+        else:
+            warnings.warn('PyDecoratorMixin is deprecated',
+                          RemovedInSphinx50Warning, stacklevel=2)
+
+        ret = super().handle_signature(sig, signode)  # type: ignore
+        signode.insert(0, addnodes.desc_addname('@', '@'))
+        return ret
+
+    def needs_arglist(self) -> bool:
+        return False
+
+
 class PyModule(SphinxDirective):
     """
     Directive to mark description of a new module.
@@ -988,6 +1004,13 @@ class PyModule(SphinxDirective):
             node_id = make_id(self.env, self.state.document, 'module', modname)
             target = nodes.target('', '', ids=[node_id], ismod=True)
             self.set_source_info(target)
+
+            # Assign old styled node_id not to break old hyperlinks (if possible)
+            # Note: Will removed in Sphinx-5.0  (RemovedInSphinx50Warning)
+            old_node_id = self.make_old_id(modname)
+            if node_id != old_node_id and old_node_id not in self.state.document.ids:
+                target['ids'].append(old_node_id)
+
             self.state.document.note_explicit_target(target)
 
             domain.note_module(modname,
@@ -1068,11 +1091,11 @@ def filter_meta_fields(app: Sphinx, domain: str, objtype: str, content: Element)
     for node in content:
         if isinstance(node, nodes.field_list):
             fields = cast(List[nodes.field], node)
-            # removing list items while iterating the list needs reversed()
-            for field in reversed(fields):
+            for field in fields:
                 field_name = cast(nodes.field_body, field[0]).astext().strip()
                 if field_name == 'meta' or field_name.startswith('meta '):
                     node.remove(field)
+                    break
 
 
 class PythonModuleIndex(Index):
@@ -1426,13 +1449,13 @@ def builtin_resolver(app: Sphinx, env: BuildEnvironment,
         if s.startswith('typing.'):
             s = s.split('.', 1)[1]
 
-        return s in typing.__all__
+        return s in typing.__all__  # type: ignore
 
     if node.get('refdomain') != 'py':
         return None
     elif node.get('reftype') in ('class', 'obj') and node.get('reftarget') == 'None':
         return contnode
-    elif node.get('reftype') in ('class', 'obj', 'exc'):
+    elif node.get('reftype') in ('class', 'exc'):
         reftarget = node.get('reftarget')
         if inspect.isclass(getattr(builtins, reftarget, None)):
             # built-in class

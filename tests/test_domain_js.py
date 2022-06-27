@@ -1,4 +1,12 @@
-"""Tests the JavaScript Domain"""
+"""
+    test_domain_js
+    ~~~~~~~~~~~~~~
+
+    Tests the JavaScript Domain
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from unittest.mock import Mock
 
@@ -34,7 +42,7 @@ def test_domain_js_xrefs(app, status, warning):
         assert_node(node, **attributes)
 
     doctree = app.env.get_doctree('roles')
-    refnodes = list(doctree.findall(addnodes.pending_xref))
+    refnodes = list(doctree.traverse(addnodes.pending_xref))
     assert_refnode(refnodes[0], None, None, 'TopLevel', 'class')
     assert_refnode(refnodes[1], None, None, 'top_level', 'func')
     assert_refnode(refnodes[2], None, 'NestedParentA', 'child_1', 'func')
@@ -52,7 +60,7 @@ def test_domain_js_xrefs(app, status, warning):
     assert len(refnodes) == 13
 
     doctree = app.env.get_doctree('module')
-    refnodes = list(doctree.findall(addnodes.pending_xref))
+    refnodes = list(doctree.traverse(addnodes.pending_xref))
     assert_refnode(refnodes[0], 'module_a.submodule', None, 'ModTopLevel',
                    'class')
     assert_refnode(refnodes[1], 'module_a.submodule', 'ModTopLevel',

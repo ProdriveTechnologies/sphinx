@@ -1,6 +1,16 @@
-"""Tests for :mod:`sphinx.ext.napoleon.docstring` module."""
+"""
+    test_napoleon_docstring
+    ~~~~~~~~~~~~~~~~~~~~~~~
+
+    Tests for :mod:`sphinx.ext.napoleon.docstring` module.
+
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
+import sys
 from collections import namedtuple
 from contextlib import contextmanager
 from inspect import cleandoc
@@ -14,8 +24,9 @@ from sphinx.ext.napoleon.docstring import (GoogleDocstring, NumpyDocstring,
                                            _convert_numpy_type_spec, _recombine_set_tokens,
                                            _token_type, _tokenize_type_spec)
 
-from .ext_napoleon_pep526_data_google import PEP526GoogleClass
-from .ext_napoleon_pep526_data_numpy import PEP526NumpyClass
+if sys.version_info >= (3, 6):
+    from .ext_napoleon_pep526_data_google import PEP526GoogleClass
+    from .ext_napoleon_pep526_data_numpy import PEP526NumpyClass
 
 
 class NamedtupleSubclass(namedtuple('NamedtupleSubclass', ('attr1', 'attr2'))):
@@ -256,18 +267,6 @@ class GoogleDocstringTest(BaseDocstringTest):
         """
         Single line summary
 
-        Returns:
-          Extended
-        """,
-        """
-        Single line summary
-
-        :returns: Extended
-        """
-    ), (
-        """
-        Single line summary
-
         Args:
           arg1(str):Extended
             description of arg1
@@ -471,22 +470,6 @@ Attributes:
    super-dooper attribute
 
    :type: numpy.ndarray
-"""
-
-    def test_attributes_with_use_ivar(self):
-        docstring = """\
-Attributes:
-    foo (int): blah blah
-    bar (str): blah blah
-"""
-
-        config = Config(napoleon_use_ivar=True)
-        actual = str(GoogleDocstring(docstring, config, obj=self.__class__))
-        expected = """\
-:ivar foo: blah blah
-:vartype foo: int
-:ivar bar: blah blah
-:vartype bar: str
 """
         self.assertEqual(expected, actual)
 
@@ -1160,13 +1143,14 @@ Do as you please
         self.assertEqual(expected, actual)
 
     def test_pep526_annotations(self):
-        # Test class attributes annotations
-        config = Config(
-            napoleon_attr_annotations=True
-        )
-        actual = str(GoogleDocstring(cleandoc(PEP526GoogleClass.__doc__), config, app=None, what="class",
-                                     obj=PEP526GoogleClass))
-        expected = """\
+        if sys.version_info >= (3, 6):
+            # Test class attributes annotations
+            config = Config(
+                napoleon_attr_annotations=True
+            )
+            actual = str(GoogleDocstring(cleandoc(PEP526GoogleClass.__doc__), config, app=None, what="class",
+                                         obj=PEP526GoogleClass))
+            expected = """\
 Sample class with PEP 526 annotations and google docstring
 
 .. attribute:: attr1
@@ -1181,7 +1165,7 @@ Sample class with PEP 526 annotations and google docstring
 
    :type: str
 """
-        self.assertEqual(expected, actual)
+            self.assertEqual(expected, actual)
 
     def test_preprocess_types(self):
         docstring = """\
@@ -2570,13 +2554,14 @@ class TestNumpyDocstring:
         assert actual == expected
 
     def test_pep526_annotations(self):
-        # test class attributes annotations
-        config = Config(
-            napoleon_attr_annotations=True
-        )
-        actual = str(NumpyDocstring(cleandoc(PEP526NumpyClass.__doc__), config, app=None, what="class",
-                                    obj=PEP526NumpyClass))
-        expected = """\
+        if sys.version_info >= (3, 6):
+            # test class attributes annotations
+            config = Config(
+                napoleon_attr_annotations=True
+            )
+            actual = str(NumpyDocstring(cleandoc(PEP526NumpyClass.__doc__), config, app=None, what="class",
+                                        obj=PEP526NumpyClass))
+            expected = """\
 Sample class with PEP 526 annotations and numpy docstring
 
 .. attribute:: attr1
@@ -2591,50 +2576,5 @@ Sample class with PEP 526 annotations and numpy docstring
 
    :type: str
 """
-        print(actual)
-        assert expected == actual
-
-
-@pytest.mark.sphinx('text', testroot='ext-napoleon',
-                    confoverrides={'autodoc_typehints': 'description',
-                                   'autodoc_typehints_description_target': 'all'})
-def test_napoleon_and_autodoc_typehints_description_all(app, status, warning):
-    app.build()
-    content = (app.outdir / 'typehints.txt').read_text(encoding='utf-8')
-    assert content == (
-        'typehints\n'
-        '*********\n'
-        '\n'
-        'mypackage.typehints.hello(x, *args, **kwargs)\n'
-        '\n'
-        '   Parameters:\n'
-        '      * **x** (*int*) -- X\n'
-        '\n'
-        '      * ***args** (*int*) -- Additional arguments.\n'
-        '\n'
-        '      * ****kwargs** (*int*) -- Extra arguments.\n'
-        '\n'
-        '   Return type:\n'
-        '      None\n'
-    )
-
-
-@pytest.mark.sphinx('text', testroot='ext-napoleon',
-                    confoverrides={'autodoc_typehints': 'description',
-                                   'autodoc_typehints_description_target': 'documented_params'})
-def test_napoleon_and_autodoc_typehints_description_documented_params(app, status, warning):
-    app.build()
-    content = (app.outdir / 'typehints.txt').read_text(encoding='utf-8')
-    assert content == (
-        'typehints\n'
-        '*********\n'
-        '\n'
-        'mypackage.typehints.hello(x, *args, **kwargs)\n'
-        '\n'
-        '   Parameters:\n'
-        '      * **x** (*int*) -- X\n'
-        '\n'
-        '      * ***args** (*int*) -- Additional arguments.\n'
-        '\n'
-        '      * ****kwargs** (*int*) -- Extra arguments.\n'
-    )
+            print(actual)
+            assert expected == actual

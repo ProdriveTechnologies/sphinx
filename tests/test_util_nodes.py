@@ -1,5 +1,12 @@
-"""Tests uti.nodes functions."""
-import warnings
+"""
+    test_util_nodes
+    ~~~~~~~~~~~~~~~
+
+    Tests uti.nodes functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 from textwrap import dedent
 from typing import Any
 
@@ -18,12 +25,8 @@ def _transform(doctree):
 
 
 def create_new_document():
-    with warnings.catch_warnings():
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
-        # DeprecationWarning: The frontend.OptionParser class will be replaced
-        # by a subclass of argparse.ArgumentParser in Docutils 0.21 or later.
-        settings = frontend.OptionParser(
-            components=(rst.Parser,)).get_default_values()
+    settings = frontend.OptionParser(
+        components=(rst.Parser,)).get_default_values()
     settings.id_prefix = 'id'
     document = new_document('dummy.txt', settings)
     return document
@@ -57,31 +60,31 @@ def test_NodeMatcher():
 
     # search by node class
     matcher = NodeMatcher(nodes.paragraph)
-    assert len(list(doctree.findall(matcher))) == 3
+    assert len(list(doctree.traverse(matcher))) == 3
 
     # search by multiple node classes
     matcher = NodeMatcher(nodes.paragraph, nodes.literal_block)
-    assert len(list(doctree.findall(matcher))) == 4
+    assert len(list(doctree.traverse(matcher))) == 4
 
     # search by node attribute
     matcher = NodeMatcher(block=1)
-    assert len(list(doctree.findall(matcher))) == 1
+    assert len(list(doctree.traverse(matcher))) == 1
 
     # search by node attribute (Any)
     matcher = NodeMatcher(block=Any)
-    assert len(list(doctree.findall(matcher))) == 3
+    assert len(list(doctree.traverse(matcher))) == 3
 
     # search by both class and attribute
     matcher = NodeMatcher(nodes.paragraph, block=Any)
-    assert len(list(doctree.findall(matcher))) == 2
+    assert len(list(doctree.traverse(matcher))) == 2
 
     # mismatched
     matcher = NodeMatcher(nodes.title)
-    assert len(list(doctree.findall(matcher))) == 0
+    assert len(list(doctree.traverse(matcher))) == 0
 
     # search with Any does not match to Text node
     matcher = NodeMatcher(blah=Any)
-    assert len(list(doctree.findall(matcher))) == 0
+    assert len(list(doctree.traverse(matcher))) == 0
 
 
 @pytest.mark.parametrize(

@@ -1,10 +1,17 @@
-"""sphinx-build -M command-line handling.
+"""
+    sphinx.cmd.make_mode
+    ~~~~~~~~~~~~~~~~~~~~
 
-This replaces the old, platform-dependent and once-generated content
-of Makefile / make.bat.
+    sphinx-build -M command-line handling.
 
-This is in its own module so that importing it is fast.  It should not
-import the main Sphinx modules (like sphinx.applications, sphinx.builders).
+    This replaces the old, platform-dependent and once-generated content
+    of Makefile / make.bat.
+
+    This is in its own module so that importing it is fast.  It should not
+    import the main Sphinx modules (like sphinx.applications, sphinx.builders).
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import os

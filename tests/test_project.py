@@ -1,4 +1,12 @@
-"""Tests project module."""
+"""
+    test_project
+    ~~~~~~~~~~~~
+
+    Tests project module.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from collections import OrderedDict
 
@@ -65,7 +73,7 @@ def test_project_doc2path(app):
     assert project.doc2path('foo') == (app.srcdir / 'foo.rst')
 
     # matched source_suffix is used if exists
-    (app.srcdir / 'foo.txt').write_text('', encoding='utf8')
+    (app.srcdir / 'foo.txt').write_text('')
     assert project.doc2path('foo') == (app.srcdir / 'foo.txt')
 
     # absolute path

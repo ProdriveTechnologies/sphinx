@@ -1,4 +1,12 @@
-"""The Sphinx documentation toolchain."""
+"""
+    Sphinx
+    ~~~~~~
+
+    The Sphinx documentation toolchain.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 # Keep this file executable as-is in Python 3!
 # (Otherwise getting the version out of it from setup.py is impossible.)
@@ -18,11 +26,9 @@ if 'PYTHONWARNINGS' not in os.environ:
 # docutils.io using mode='rU' for open
 warnings.filterwarnings('ignore', "'U' mode is deprecated",
                         DeprecationWarning, module='docutils.io')
-warnings.filterwarnings('ignore', 'The frontend.Option class .*',
-                        DeprecationWarning, module='docutils.frontend')
 
-__version__ = '6.0.0'
-__released__ = '6.0.0'  # used when Sphinx builds its own docs
+__version__ = '4.4.0+'
+__released__ = '4.4.0'  # used when Sphinx builds its own docs
 
 #: Version info for better programmatic use.
 #:
@@ -32,7 +38,7 @@ __released__ = '6.0.0'  # used when Sphinx builds its own docs
 #:
 #: .. versionadded:: 1.2
 #:    Before version 1.2, check the string ``sphinx.__version__``.
-version_info = (6, 0, 0, 'final', 0)
+version_info = (4, 4, 0, 'beta', 0)
 
 package_dir = path.abspath(path.dirname(__file__))
 

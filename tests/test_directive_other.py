@@ -1,4 +1,12 @@
-"""Test the other directives."""
+"""
+    test_directive_other
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Test the other directives.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import pytest
 from docutils import nodes

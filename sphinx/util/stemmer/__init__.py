@@ -1,4 +1,12 @@
-"""Word stemming utilities for Sphinx."""
+"""
+    sphinx.util.stemmer
+    ~~~~~~~~~~~~~~~~~~~
+
+    Word stemming utilities for Sphinx.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from sphinx.util.stemmer.porter import PorterStemmer
 

@@ -1,4 +1,13 @@
-"""Implements the low-level algorithms Sphinx uses for versioning doctrees."""
+"""
+    sphinx.versioning
+    ~~~~~~~~~~~~~~~~~
+
+    Implements the low-level algorithms Sphinx uses for the versioning of
+    doctrees.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 import pickle
 from itertools import product, zip_longest
 from operator import itemgetter
@@ -33,7 +42,7 @@ def add_uids(doctree: Node, condition: Any) -> Iterator[Node]:
     :param condition:
         A callable which returns either ``True`` or ``False`` for a given node.
     """
-    for node in doctree.findall(condition):
+    for node in doctree.traverse(condition):
         node.uid = uuid4().hex
         yield node
 
@@ -48,8 +57,8 @@ def merge_doctrees(old: Node, new: Node, condition: Any) -> Iterator[Node]:
     :param condition:
         A callable which returns either ``True`` or ``False`` for a given node.
     """
-    old_iter = old.findall(condition)
-    new_iter = new.findall(condition)
+    old_iter = old.traverse(condition)
+    new_iter = new.traverse(condition)
     old_nodes = []
     new_nodes = []
     ratios = {}

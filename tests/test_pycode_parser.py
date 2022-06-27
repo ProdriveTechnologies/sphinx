@@ -1,4 +1,12 @@
-"""Test pycode.parser."""
+"""
+    test_pycode_parser
+    ~~~~~~~~~~~~~~~~~~
+
+    Test pycode.parser.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from sphinx.pycode.parser import Parser
 from sphinx.util.inspect import signature_from_str

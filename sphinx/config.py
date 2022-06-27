@@ -1,4 +1,12 @@
-"""Build configuration file handling."""
+"""
+    sphinx.config
+    ~~~~~~~~~~~~~
+
+    Build configuration file handling.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 import traceback
@@ -92,7 +100,7 @@ class Config:
         # the real default is locale-dependent
         'today_fmt': (None, 'env', [str]),
 
-        'language': ('en', 'env', [str]),
+        'language': (None, 'env', [str]),
         'locale_dirs': (['locales'], 'env', []),
         'figure_language_filename': ('{root}.{language}{ext}', 'env', [str]),
         'gettext_allow_fuzzy_translations': (False, 'gettext', []),
@@ -163,17 +171,6 @@ class Config:
             raise ConfigError(__("config directory doesn't contain a conf.py file (%s)") %
                               confdir)
         namespace = eval_config_file(filename, tags)
-
-        # Note: Old sphinx projects have been configured as "langugae = None" because
-        #       sphinx-quickstart previously generated this by default.
-        #       To keep compatibility, they should be fallback to 'en' for a while
-        #       (This conversion should not be removed before 2025-01-01).
-        if namespace.get("language", ...) is None:
-            logger.warning(__("Invalid configuration value found: 'language = None'. "
-                              "Update your configuration to a valid langauge code. "
-                              "Falling back to 'en' (English)."))
-            namespace["language"] = "en"
-
         return cls(namespace, overrides or {})
 
     def convert_overrides(self, name: str, value: Any) -> Any:
@@ -209,7 +206,7 @@ class Config:
                 except ValueError as exc:
                     raise ValueError(__('invalid number %r for config value %r, ignoring') %
                                      (value, name)) from exc
-            elif callable(defvalue):
+            elif hasattr(defvalue, '__call__'):
                 return value
             elif defvalue is not None and not isinstance(defvalue, str):
                 raise ValueError(__('cannot override config setting %r with unsupported '
@@ -254,24 +251,13 @@ class Config:
             if name in self.values:
                 self.__dict__[name] = config[name]
 
-    def post_init_values(self) -> None:
-        """
-        Initialize additional config variables that are added after init_values() called.
-        """
-        config = self._raw_config
-        for name in config:
-            if name not in self.__dict__ and name in self.values:
-                self.__dict__[name] = config[name]
-
-        check_confval_types(None, self)
-
     def __getattr__(self, name: str) -> Any:
         if name.startswith('_'):
             raise AttributeError(name)
         if name not in self.values:
             raise AttributeError(__('No such config value: %s') % name)
         default = self.values[name][0]
-        if callable(default):
+        if hasattr(default, '__call__'):
             return default(self)
         return default
 
@@ -416,7 +402,7 @@ def correct_copyright_year(app: "Sphinx", config: Config) -> None:
     if getenv('SOURCE_DATE_EPOCH') is not None:
         for k in ('copyright', 'epub_copyright'):
             if k in config:
-                replace = r'\g<1>%s' % format_date('%Y', language='en')
+                replace = r'\g<1>%s' % format_date('%Y')
                 config[k] = copyright_year_re.sub(replace, config[k])
 
 
@@ -427,7 +413,7 @@ def check_confval_types(app: "Sphinx", config: Config) -> None:
     for confval in config:
         default, rebuild, annotations = config.values[confval.name]
 
-        if callable(default):
+        if hasattr(default, '__call__'):
             default = default(config)  # evaluate default value
         if default is None and not annotations:
             continue  # neither inferable nor expliclitly annotated types
@@ -441,7 +427,7 @@ def check_confval_types(app: "Sphinx", config: Config) -> None:
                          "but `{current}` is given.")
                 logger.warning(msg.format(name=confval.name,
                                           current=confval.value,
-                                          candidates=annotations.candidates), once=True)
+                                          candidates=annotations.candidates))
         else:
             if type(confval.value) is type(default):
                 continue
@@ -466,13 +452,13 @@ def check_confval_types(app: "Sphinx", config: Config) -> None:
                     permitted = " or ".join(wrapped_annotations)
                 logger.warning(msg.format(name=confval.name,
                                           current=type(confval.value),
-                                          permitted=permitted), once=True)
+                                          permitted=permitted))
             else:
                 msg = __("The config value `{name}' has type `{current.__name__}', "
                          "defaults to `{default.__name__}'.")
                 logger.warning(msg.format(name=confval.name,
                                           current=type(confval.value),
-                                          default=type(default)), once=True)
+                                          default=type(default)))
 
 
 def check_primary_domain(app: "Sphinx", config: Config) -> None:

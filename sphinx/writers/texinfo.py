@@ -1,15 +1,25 @@
-"""Custom docutils writer for Texinfo."""
+"""
+    sphinx.writers.texinfo
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    Custom docutils writer for Texinfo.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 import textwrap
+import warnings
 from os import path
-from typing import (TYPE_CHECKING, Any, Dict, Iterable, Iterator, List, Pattern, Set, Tuple,
-                    Union, cast)
+from typing import (TYPE_CHECKING, Any, Dict, Iterable, Iterator, List, Optional, Pattern, Set,
+                    Tuple, Union, cast)
 
 from docutils import nodes, writers
 from docutils.nodes import Element, Node, Text
 
 from sphinx import __display_version__, addnodes
+from sphinx.deprecation import RemovedInSphinx50Warning
 from sphinx.domains import IndexEntry
 from sphinx.domains.index import IndexDomain
 from sphinx.errors import ExtensionError
@@ -50,6 +60,8 @@ TEMPLATE = """\
 @exampleindent %(exampleindent)s
 @finalout
 %(direntry)s
+@definfoenclose strong,`,'
+@definfoenclose emph,`,'
 @c %%**end of header
 
 @copying
@@ -182,7 +194,6 @@ class TexinfoTranslator(SphinxTranslator):
         self.curfilestack: List[str] = []
         self.footnotestack: List[Dict[str, List[Union[collected_footnote, bool]]]] = []  # NOQA
         self.in_footnote = 0
-        self.in_samp = 0
         self.handled_abbrs: Set[str] = set()
         self.colwidths: List[int] = None
 
@@ -274,7 +285,7 @@ class TexinfoTranslator(SphinxTranslator):
         self.indices = [(add_node_name(name), content)
                         for name, content in self.indices]
         # each section is also a node
-        for section in self.document.findall(nodes.section):
+        for section in self.document.traverse(nodes.section):
             title = cast(nodes.TextElement, section.next_node(nodes.Titular))
             name = title.astext() if title else '<untitled>'
             section['node_name'] = add_node_name(name)
@@ -283,7 +294,7 @@ class TexinfoTranslator(SphinxTranslator):
         """Collect the menu entries for each "node" section."""
         node_menus = self.node_menus
         targets: List[Element] = [self.document]
-        targets.extend(self.document.findall(nodes.section))
+        targets.extend(self.document.traverse(nodes.section))
         for node in targets:
             assert 'node_name' in node and node['node_name']
             entries = [s['node_name'] for s in find_subsections(node)]
@@ -300,7 +311,7 @@ class TexinfoTranslator(SphinxTranslator):
             del node_menus[top['node_name']]
             top['node_name'] = 'Top'
         # handle the indices
-        for name, _content in self.indices:
+        for name, content in self.indices:
             node_menus[name] = []
             node_menus['Top'].append(name)
 
@@ -308,7 +319,7 @@ class TexinfoTranslator(SphinxTranslator):
         """Collect the relative links (next, previous, up) for each "node"."""
         rellinks = self.rellinks
         node_menus = self.node_menus
-        for id in node_menus:
+        for id, entries in node_menus.items():
             rellinks[id] = ['', '', '']
         # up's
         for id, entries in node_menus.items():
@@ -454,7 +465,7 @@ class TexinfoTranslator(SphinxTranslator):
     def collect_indices(self) -> None:
         def generate(content: List[Tuple[str, List[IndexEntry]]], collapsed: bool) -> str:
             ret = ['\n@menu\n']
-            for _letter, entries in content:
+            for letter, entries in content:
                 for entry in entries:
                     if not entry[3]:
                         continue
@@ -534,12 +545,9 @@ class TexinfoTranslator(SphinxTranslator):
     def add_xref(self, id: str, name: str, node: Node) -> None:
         name = self.escape_menu(name)
         sid = self.get_short_id(id)
-        if self.config.texinfo_cross_references:
-            self.body.append('@ref{%s,,%s}' % (sid, name))
-            self.referenced_ids.add(sid)
-            self.referenced_ids.add(self.escape_id(id))
-        else:
-            self.body.append(name)
+        self.body.append('@ref{%s,,%s}' % (sid, name))
+        self.referenced_ids.add(sid)
+        self.referenced_ids.add(self.escape_id(id))
 
     # -- Visiting
 
@@ -795,33 +803,21 @@ class TexinfoTranslator(SphinxTranslator):
     # -- Inline
 
     def visit_strong(self, node: Element) -> None:
-        self.body.append('`')
+        self.body.append('@strong{')
 
     def depart_strong(self, node: Element) -> None:
-        self.body.append("'")
+        self.body.append('}')
 
     def visit_emphasis(self, node: Element) -> None:
-        if self.in_samp:
-            self.body.append('@var{')
-            self.context.append('}')
-        else:
-            self.body.append('`')
-            self.context.append("'")
+        self.body.append('@emph{')
 
     def depart_emphasis(self, node: Element) -> None:
-        self.body.append(self.context.pop())
-
-    def is_samp(self, node: Element) -> bool:
-        return 'samp' in node['classes']
+        self.body.append('}')
 
     def visit_literal(self, node: Element) -> None:
-        if self.is_samp(node):
-            self.in_samp += 1
         self.body.append('@code{')
 
     def depart_literal(self, node: Element) -> None:
-        if self.is_samp(node):
-            self.in_samp -= 1
         self.body.append('}')
 
     def visit_superscript(self, node: Element) -> None:
@@ -1010,7 +1006,7 @@ class TexinfoTranslator(SphinxTranslator):
         if len(self.colwidths) != self.n_cols:
             return
         self.body.append('\n\n@multitable ')
-        for n in self.colwidths:
+        for i, n in enumerate(self.colwidths):
             self.body.append('{%s} ' % ('x' * (n + 2)))
 
     def depart_colspec(self, node: Element) -> None:
@@ -1046,7 +1042,7 @@ class TexinfoTranslator(SphinxTranslator):
         self.entry_sep = '@tab'
 
     def depart_entry(self, node: Element) -> None:
-        for _i in range(node.get('morecols', 0)):
+        for i in range(node.get('morecols', 0)):
             self.body.append('\n@tab\n')
 
     # -- Field Lists
@@ -1227,11 +1223,7 @@ class TexinfoTranslator(SphinxTranslator):
         self.depart_topic(node)
 
     def visit_label(self, node: Element) -> None:
-        # label numbering is automatically generated by Texinfo
-        if self.in_footnote:
-            raise nodes.SkipNode
-        else:
-            self.body.append('@w{(')
+        self.body.append('@w{(')
 
     def depart_label(self, node: Element) -> None:
         self.body.append(')} ')
@@ -1271,6 +1263,10 @@ class TexinfoTranslator(SphinxTranslator):
 
     def unimplemented_visit(self, node: Element) -> None:
         logger.warning(__("unimplemented node type: %r"), node,
+                       location=node)
+
+    def unknown_visit(self, node: Node) -> None:
+        logger.warning(__("unknown node type: %r"), node,
                        location=node)
 
     def unknown_departure(self, node: Node) -> None:
@@ -1554,3 +1550,11 @@ class TexinfoTranslator(SphinxTranslator):
         self.body.append('\n\n@example\n%s\n@end example\n\n' %
                          self.escape_arg(node.astext()))
         raise nodes.SkipNode
+
+    @property
+    def desc(self) -> Optional[addnodes.desc]:
+        warnings.warn('TexinfoWriter.desc is deprecated.', RemovedInSphinx50Warning)
+        if len(self.descs):
+            return self.descs[-1]
+        else:
+            return None

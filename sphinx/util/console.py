@@ -1,4 +1,12 @@
-"""Format colored console output."""
+"""
+    sphinx.util.console
+    ~~~~~~~~~~~~~~~~~~~
+
+    Format colored console output.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import os
 import re
@@ -49,12 +57,8 @@ def term_width_line(text: str) -> str:
 
 
 def color_terminal() -> bool:
-    if 'NO_COLOR' in os.environ:
-        return False
     if sys.platform == 'win32' and colorama is not None:
         colorama.init()
-        return True
-    if 'FORCE_COLOR' in os.environ:
         return True
     if not hasattr(sys.stdout, 'isatty'):
         return False

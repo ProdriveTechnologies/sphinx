@@ -1,13 +1,7 @@
-import pathlib
-from typing import Any, Tuple, TypeVar, Union
+from typing import Any, Tuple, Union
 
 CONST1: int
-#: docstring
 CONST2: int = 1
-#: docstring
-CONST3: pathlib.PurePosixPath = pathlib.PurePosixPath("/a/b/c")
-#: docstring
-T = TypeVar("T", bound=pathlib.PurePosixPath)
 
 
 def incr(a: int, b: int = 1) -> int:
@@ -22,7 +16,6 @@ def decr(a, b = 1):
 class Math:
     CONST1: int
     CONST2: int = 1
-    CONST3: pathlib.PurePosixPath = pathlib.PurePosixPath("/a/b/c")
 
     def __init__(self, s: str, o: Any = None) -> None:
         pass
@@ -48,10 +41,6 @@ class Math:
     @property
     def prop(self) -> int:
         return 0
-
-    @property
-    def path(self) -> pathlib.PurePosixPath:
-        return pathlib.PurePosixPath("/a/b/c")
 
 
 def tuple_args(x: Tuple[int, Union[int, str]]) -> Tuple[int, int]:
@@ -94,10 +83,8 @@ def missing_attr(c,
 class _ClassWithDocumentedInit:
     """Class docstring."""
 
-    def __init__(self, x: int, *args: int, **kwargs: int) -> None:
+    def __init__(self, x: int) -> None:
         """Init docstring.
 
         :param x: Some integer
-        :param args: Some integer
-        :param kwargs: Some integer
         """

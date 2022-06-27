@@ -1,4 +1,12 @@
-"""Test inventory util functions."""
+"""
+    test_util_inventory
+    ~~~~~~~~~~~~~~~~~~~
+
+    Test inventory util functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import posixpath
 import zlib

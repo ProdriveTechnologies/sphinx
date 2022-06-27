@@ -1,4 +1,12 @@
-"""Test sphinx.ext.todo extension."""
+"""
+    test_ext_todo
+    ~~~~~~~~~~~~~
+
+    Test sphinx.ext.todo extension.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import re
 
@@ -17,7 +25,7 @@ def test_todo(app, status, warning):
     app.builder.build_all()
 
     # check todolist
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert ('<p class="admonition-title">Todo</p>\n'
             '<p>todo in foo</p>') in content
 
@@ -25,7 +33,7 @@ def test_todo(app, status, warning):
             '<p>todo in bar</p>') in content
 
     # check todo
-    content = (app.outdir / 'foo.html').read_text(encoding='utf8')
+    content = (app.outdir / 'foo.html').read_text()
     assert ('<p class="admonition-title">Todo</p>\n'
             '<p>todo in foo</p>') in content
 
@@ -55,7 +63,7 @@ def test_todo_not_included(app, status, warning):
     app.builder.build_all()
 
     # check todolist
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert ('<p class="admonition-title">Todo</p>\n'
             '<p>todo in foo</p>') not in content
 
@@ -63,7 +71,7 @@ def test_todo_not_included(app, status, warning):
             '<p>todo in bar</p>') not in content
 
     # check todo
-    content = (app.outdir / 'foo.html').read_text(encoding='utf8')
+    content = (app.outdir / 'foo.html').read_text()
     assert ('<p class="admonition-title">Todo</p>\n'
             '<p>todo in foo</p>') not in content
 
@@ -90,7 +98,7 @@ def test_todo_valid_link(app, status, warning):
     # Ensure the LaTeX output is built.
     app.builder.build_all()
 
-    content = (app.outdir / 'python.tex').read_text(encoding='utf8')
+    content = (app.outdir / 'python.tex').read_text()
 
     # Look for the link to foo. Note that there are two of them because the
     # source document uses todolist twice. We could equally well look for links

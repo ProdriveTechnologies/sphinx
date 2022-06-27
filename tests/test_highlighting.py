@@ -1,4 +1,12 @@
-"""Test the Pygments highlighting bridge."""
+"""
+    test_highlighting
+    ~~~~~~~~~~~~~~~~~
+
+    Test the Pygments highlighting bridge.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from unittest import mock
 

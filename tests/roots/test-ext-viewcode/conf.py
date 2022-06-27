@@ -18,7 +18,7 @@ if 'test_linkcode' in tags:  # NOQA
             return "http://foobar/source/%s.py" % fn
         elif domain == "js":
             return "http://foobar/js/" + info['fullname']
-        elif domain in ("c", "cpp"):
+        elif domain in ("c", "cpp", "csharp"):
             return "http://foobar/%s/%s" % (domain,  "".join(info['names']))
         else:
             raise AssertionError()

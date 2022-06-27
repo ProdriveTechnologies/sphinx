@@ -1,4 +1,12 @@
-"""Tests util.inspect functions."""
+"""
+    test_util_inspect
+    ~~~~~~~~~~~~~~~
+
+    Tests util.inspect functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import ast
 import datetime
@@ -7,21 +15,11 @@ import functools
 import sys
 import types
 from inspect import Parameter
-from typing import Optional
 
 import pytest
 
 from sphinx.util import inspect
-from sphinx.util.inspect import TypeAliasForwardRef, TypeAliasNamespace, stringify_signature
-from sphinx.util.typing import stringify
-
-
-def test_TypeAliasForwardRef():
-    alias = TypeAliasForwardRef('example')
-    assert stringify(alias) == 'example'
-
-    alias = Optional[alias]
-    assert stringify(alias) == 'Optional[example]'
+from sphinx.util.inspect import TypeAliasNamespace, stringify_signature
 
 
 def test_TypeAliasNamespace():
@@ -159,24 +157,21 @@ def test_signature_annotations():
 
     # Generic types with concrete parameters
     sig = inspect.signature(f1)
-    assert stringify_signature(sig) == '(x: typing.List[int]) -> typing.List[int]'
+    assert stringify_signature(sig) == '(x: List[int]) -> List[int]'
 
     # TypeVars and generic types with TypeVars
     sig = inspect.signature(f2)
     if sys.version_info < (3, 7):
-        assert stringify_signature(sig) == ('(x: typing.List[typing.T],'
-                                            ' y: typing.List[typing.T_co],'
-                                            ' z: typing.T'
-                                            ') -> typing.List[typing.T_contra]')
+        assert stringify_signature(sig) == '(x: List[T], y: List[T_co], z: T) -> List[T_contra]'
     else:
-        assert stringify_signature(sig) == ('(x: typing.List[tests.typing_test_data.T],'
-                                            ' y: typing.List[tests.typing_test_data.T_co],'
+        assert stringify_signature(sig) == ('(x: List[tests.typing_test_data.T],'
+                                            ' y: List[tests.typing_test_data.T_co],'
                                             ' z: tests.typing_test_data.T'
-                                            ') -> typing.List[tests.typing_test_data.T_contra]')
+                                            ') -> List[tests.typing_test_data.T_contra]')
 
     # Union types
     sig = inspect.signature(f3)
-    assert stringify_signature(sig) == '(x: typing.Union[str, numbers.Integral]) -> None'
+    assert stringify_signature(sig) == '(x: Union[str, numbers.Integral]) -> None'
 
     # Quoted annotations
     sig = inspect.signature(f4)
@@ -192,21 +187,18 @@ def test_signature_annotations():
 
     # Space around '=' for defaults
     sig = inspect.signature(f7)
-    if sys.version_info < (3, 11):
-        assert stringify_signature(sig) == '(x: typing.Optional[int] = None, y: dict = {}) -> None'
-    else:
-        assert stringify_signature(sig) == '(x: int = None, y: dict = {}) -> None'
+    assert stringify_signature(sig) == '(x: Optional[int] = None, y: dict = {}) -> None'
 
     # Callable types
     sig = inspect.signature(f8)
-    assert stringify_signature(sig) == '(x: typing.Callable[[int, str], int]) -> None'
+    assert stringify_signature(sig) == '(x: Callable[[int, str], int]) -> None'
 
     sig = inspect.signature(f9)
-    assert stringify_signature(sig) == '(x: typing.Callable) -> None'
+    assert stringify_signature(sig) == '(x: Callable) -> None'
 
     # Tuple types
     sig = inspect.signature(f10)
-    assert stringify_signature(sig) == '(x: typing.Tuple[int, str], y: typing.Tuple[int, ...]) -> None'
+    assert stringify_signature(sig) == '(x: Tuple[int, str], y: Tuple[int, ...]) -> None'
 
     # Instance annotations
     sig = inspect.signature(f11)
@@ -214,24 +206,24 @@ def test_signature_annotations():
 
     # tuple with more than two items
     sig = inspect.signature(f12)
-    assert stringify_signature(sig) == '() -> typing.Tuple[int, str, int]'
+    assert stringify_signature(sig) == '() -> Tuple[int, str, int]'
 
     # optional
     sig = inspect.signature(f13)
-    assert stringify_signature(sig) == '() -> typing.Optional[str]'
+    assert stringify_signature(sig) == '() -> Optional[str]'
 
     # optional union
     sig = inspect.signature(f20)
-    assert stringify_signature(sig) in ('() -> typing.Optional[typing.Union[int, str]]',
-                                        '() -> typing.Optional[typing.Union[str, int]]')
+    assert stringify_signature(sig) in ('() -> Optional[Union[int, str]]',
+                                        '() -> Optional[Union[str, int]]')
 
     # Any
     sig = inspect.signature(f14)
-    assert stringify_signature(sig) == '() -> typing.Any'
+    assert stringify_signature(sig) == '() -> Any'
 
     # ForwardRef
     sig = inspect.signature(f15)
-    assert stringify_signature(sig) == '(x: Unknown, y: int) -> typing.Any'
+    assert stringify_signature(sig) == '(x: Unknown, y: int) -> Any'
 
     # keyword only arguments (1)
     sig = inspect.signature(f16)
@@ -242,8 +234,7 @@ def test_signature_annotations():
     assert stringify_signature(sig) == '(*, arg3, arg4)'
 
     sig = inspect.signature(f18)
-    assert stringify_signature(sig) == ('(self, arg1: typing.Union[int, typing.Tuple] = 10) -> '
-                                        'typing.List[typing.Dict]')
+    assert stringify_signature(sig) == '(self, arg1: Union[int, Tuple] = 10) -> List[Dict]'
 
     # annotations for variadic and keyword parameters
     sig = inspect.signature(f19)
@@ -255,10 +246,10 @@ def test_signature_annotations():
 
     # type hints by string
     sig = inspect.signature(Node.children)
-    assert stringify_signature(sig) == '(self) -> typing.List[tests.typing_test_data.Node]'
+    assert stringify_signature(sig) == '(self) -> List[tests.typing_test_data.Node]'
 
     sig = inspect.signature(Node.__init__)
-    assert stringify_signature(sig) == '(self, parent: typing.Optional[tests.typing_test_data.Node]) -> None'
+    assert stringify_signature(sig) == '(self, parent: Optional[tests.typing_test_data.Node]) -> None'
 
     # show_annotation is False
     sig = inspect.signature(f7)
@@ -266,17 +257,7 @@ def test_signature_annotations():
 
     # show_return_annotation is False
     sig = inspect.signature(f7)
-    if sys.version_info < (3, 11):
-        assert stringify_signature(sig, show_return_annotation=False) == '(x: typing.Optional[int] = None, y: dict = {})'
-    else:
-        assert stringify_signature(sig, show_return_annotation=False) == '(x: int = None, y: dict = {})'
-
-    # unqualified_typehints is True
-    sig = inspect.signature(f7)
-    if sys.version_info < (3, 11):
-        assert stringify_signature(sig, unqualified_typehints=True) == '(x: ~typing.Optional[int] = None, y: dict = {}) -> None'
-    else:
-        assert stringify_signature(sig, unqualified_typehints=True) == '(x: int = None, y: dict = {}) -> None'
+    assert stringify_signature(sig, show_return_annotation=False) == '(x: Optional[int] = None, y: dict = {})'
 
 
 @pytest.mark.skipif(sys.version_info < (3, 8), reason='python 3.8+ is required.')

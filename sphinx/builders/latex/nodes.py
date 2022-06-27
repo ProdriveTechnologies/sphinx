@@ -1,4 +1,12 @@
-"""Additional nodes for LaTeX writer."""
+"""
+    sphinx.builders.latex.nodes
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Additional nodes for LaTeX writer.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from docutils import nodes
 

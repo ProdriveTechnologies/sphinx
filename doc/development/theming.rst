@@ -88,8 +88,8 @@ Python :mod:`ConfigParser` module) and has the following structure:
 Distribute your theme as a Python package
 -----------------------------------------
 
-As a way to distribute your theme, you can use a Python package.  This makes it
-easier for users to set up your theme.
+As a way to distribute your theme, you can use Python package.  Python package
+brings to users easy setting up ways.
 
 To distribute your theme as a Python package, please define an entry point
 called ``sphinx.html_themes`` in your ``setup.py`` file, and write a ``setup()``
@@ -248,11 +248,11 @@ Now, you will have access to this function in jinja like so:
 Add your own static files to the build assets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, Sphinx copies static files on the ``static/`` directory of the template
-directory.  However, if your package needs to place static files outside of the
-``static/`` directory for some reasons, you need to copy them to the ``_static/``
-directory of HTML outputs manually at the build via an event hook.  Here is an
-example of code to accomplish this:
+If you are packaging your own build assets with an extension
+(e.g., a CSS or JavaScript file), you need to ensure that they are placed
+in the ``_static/`` folder of HTML outputs. To do so, you may copy them directly
+into a build's ``_static/`` folder at build time, generally via an event hook.
+Here is some sample code to accomplish this:
 
 .. code-block:: python
 
@@ -265,7 +265,7 @@ example of code to accomplish this:
            copy_asset_file('path/to/myextension/_static/myjsfile.js', staticdir)
 
    def setup(app):
-       app.connect('build-finished', copy_custom_files)
+       app.connect('builder-inited', copy_custom_files)
 
 
 Inject JavaScript based on user configuration
@@ -285,7 +285,7 @@ engine, allowing you to embed variables and control behavior.
 
 For example, the following JavaScript structure:
 
-.. code-block:: none
+.. code-block:: bash
 
    mymodule/
    ├── _static
@@ -294,7 +294,7 @@ For example, the following JavaScript structure:
 
 Will result in the following static file placed in your HTML's build output:
 
-.. code-block:: none
+.. code-block:: bash
 
    _build/
    └── html

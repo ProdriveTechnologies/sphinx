@@ -1,4 +1,12 @@
-"""Test the autodoc extension."""
+"""
+    test_ext_autodoc_preserve_defaults
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Test the autodoc extension.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import sys
 
@@ -28,26 +36,15 @@ def test_preserve_defaults(app):
         '   docstring',
         '',
         '',
-        '   .. py:method:: Class.clsmeth(name: str = CONSTANT, sentinel: ~typing.Any = '
-        'SENTINEL, now: ~datetime.datetime = datetime.now(), color: int = %s, *, '
-        'kwarg1, kwarg2=%s) -> None' % (color, color),
-        '      :module: target.preserve_defaults',
-        '      :classmethod:',
-        '',
-        '      docstring',
-        '',
-        '',
-        '   .. py:method:: Class.meth(name: str = CONSTANT, sentinel: ~typing.Any = '
-        'SENTINEL, now: ~datetime.datetime = datetime.now(), color: int = %s, *, '
-        'kwarg1, kwarg2=%s) -> None' % (color, color),
+        '   .. py:method:: Class.meth(name: str = CONSTANT, sentinel: Any = SENTINEL, '
+        'now: datetime.datetime = datetime.now(), color: int = %s) -> None' % color,
         '      :module: target.preserve_defaults',
         '',
         '      docstring',
         '',
         '',
-        '.. py:function:: foo(name: str = CONSTANT, sentinel: ~typing.Any = SENTINEL, '
-        'now: ~datetime.datetime = datetime.now(), color: int = %s, *, kwarg1, '
-        'kwarg2=%s) -> None' % (color, color),
+        '.. py:function:: foo(name: str = CONSTANT, sentinel: Any = SENTINEL, now: '
+        'datetime.datetime = datetime.now(), color: int = %s) -> None' % color,
         '   :module: target.preserve_defaults',
         '',
         '   docstring',

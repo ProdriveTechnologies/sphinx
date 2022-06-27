@@ -1,4 +1,12 @@
-"""Logging utility functions for Sphinx."""
+"""
+    sphinx.util.logging
+    ~~~~~~~~~~~~~~~~~~~
+
+    Logging utility functions for Sphinx.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import logging
 import logging.handlers
@@ -103,21 +111,14 @@ class SphinxInfoLogRecord(SphinxLogRecord):
 
 class SphinxWarningLogRecord(SphinxLogRecord):
     """Warning log record class supporting location"""
-    @property
-    def prefix(self) -> str:  # type: ignore
-        if self.levelno >= logging.CRITICAL:
-            return 'CRITICAL: '
-        elif self.levelno >= logging.ERROR:
-            return 'ERROR: '
-        else:
-            return 'WARNING: '
+    prefix = 'WARNING: '
 
 
 class SphinxLoggerAdapter(logging.LoggerAdapter):
     """LoggerAdapter allowing ``type`` and ``subtype`` keywords."""
     KEYWORDS = ['type', 'subtype', 'location', 'nonl', 'color', 'once']
 
-    def log(self, level: Union[int, str], msg: str, *args: Any, **kwargs: Any) -> None:  # type: ignore # NOQA
+    def log(self, level: Union[int, str], msg: str, *args: Any, **kwargs: Any) -> None:
         if isinstance(level, int):
             super().log(level, msg, *args, **kwargs)
         else:
@@ -367,8 +368,12 @@ def is_suppressed_warning(type: str, subtype: str, suppress_warnings: List[str])
         else:
             target, subtarget = warning_type, None
 
-        if target == type and subtarget in (None, subtype, "*"):
-            return True
+        if target == type:
+            if ((subtype is None and subtarget is None) or
+                    subtarget is None or
+                    subtarget == subtype or
+                    subtarget == '*'):
+                return True
 
     return False
 

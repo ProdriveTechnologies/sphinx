@@ -1,4 +1,12 @@
-"""The title collector components for sphinx.environment."""
+"""
+    sphinx.environment.collectors.title
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    The title collector components for sphinx.environment.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Any, Dict, Set
 
@@ -35,7 +43,7 @@ class TitleCollector(EnvironmentCollector):
             longtitlenode = nodes.title()
             longtitlenode += nodes.Text(doctree['title'])
         # look for first section title and use that as the title
-        for node in doctree.findall(nodes.section):
+        for node in doctree.traverse(nodes.section):
             visitor = SphinxContentsFilter(doctree)
             node[0].walkabout(visitor)
             titlenode += visitor.get_entry_text()

@@ -298,9 +298,7 @@ Here is a more detailed list of these events.
 
    Emitted when a cross-reference to an object cannot be resolved even after
    :event:`missing-reference`.  If the event handler can emit warnings for
-   the missing reference, it should return ``True``. The configuration variables
-   :confval:`nitpick_ignore` and :confval:`nitpick_ignore_regex` prevent the
-   event from being emitted for the corresponding nodes.
+   the missing reference, it should return ``True``.
 
    .. versionadded:: 3.4
 

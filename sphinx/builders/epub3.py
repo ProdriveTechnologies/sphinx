@@ -1,6 +1,12 @@
-"""Build epub3 files.
+"""
+    sphinx.builders.epub3
+    ~~~~~~~~~~~~~~~~~~~~~
 
-Originally derived from epub.py.
+    Build epub3 files.
+    Originally derived from epub.py.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import html
@@ -88,7 +94,7 @@ class Epub3Builder(_epub_base.EpubBuilder):
         metadata['contributor'] = html.escape(self.config.epub_contributor)
         metadata['page_progression_direction'] = PAGE_PROGRESSION_DIRECTIONS.get(writing_mode)
         metadata['ibook_scroll_axis'] = IBOOK_SCROLL_AXIS.get(writing_mode)
-        metadata['date'] = html.escape(format_date("%Y-%m-%dT%H:%M:%SZ", language='en'))
+        metadata['date'] = html.escape(format_date("%Y-%m-%dT%H:%M:%SZ"))
         metadata['version'] = html.escape(self.config.version)
         metadata['epub_version'] = self.config.epub_version
         return metadata

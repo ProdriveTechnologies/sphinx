@@ -1,4 +1,12 @@
-"""Test the build process with manpage builder with the test root."""
+"""
+    test_build_manpage
+    ~~~~~~~~~~~~~~~~~~
+
+    Test the build process with manpage builder with the test root.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import pytest
 
@@ -11,7 +19,7 @@ def test_all(app, status, warning):
     app.builder.build_all()
     assert (app.outdir / 'sphinxtests.1').exists()
 
-    content = (app.outdir / 'sphinxtests.1').read_text(encoding='utf8')
+    content = (app.outdir / 'sphinxtests.1').read_text()
     assert r'\fBprint \fP\fIi\fP\fB\en\fP' in content
     assert r'\fBmanpage\en\fP' in content
 
@@ -35,7 +43,7 @@ def test_all(app, status, warning):
 def test_man_pages_empty_description(app, status, warning):
     app.builder.build_all()
 
-    content = (app.outdir / 'title.1').read_text(encoding='utf8')
+    content = (app.outdir / 'title.1').read_text()
     assert r'title \-' not in content
 
 
@@ -49,7 +57,7 @@ def test_man_make_section_directory(app, status, warning):
 @pytest.mark.sphinx('man', testroot='directive-code')
 def test_captioned_code_block(app, status, warning):
     app.builder.build_all()
-    content = (app.outdir / 'python.1').read_text(encoding='utf8')
+    content = (app.outdir / 'python.1').read_text()
 
     assert ('.sp\n'
             'caption \\fItest\\fP rb\n'
@@ -80,5 +88,5 @@ def test_default_man_pages():
 @pytest.mark.sphinx('man', testroot='markup-rubric')
 def test_rubric(app, status, warning):
     app.build()
-    content = (app.outdir / 'python.1').read_text(encoding='utf8')
+    content = (app.outdir / 'python.1').read_text()
     assert 'This is a rubric\n' in content

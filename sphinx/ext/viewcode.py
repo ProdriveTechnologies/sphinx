@@ -1,7 +1,16 @@
-"""Add links to module code in Python object descriptions."""
+"""
+    sphinx.ext.viewcode
+    ~~~~~~~~~~~~~~~~~~~
+
+    Add links to module code in Python object descriptions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import posixpath
 import traceback
+import warnings
 from os import path
 from typing import Any, Dict, Generator, Iterable, Optional, Set, Tuple, cast
 
@@ -13,6 +22,7 @@ from sphinx import addnodes
 from sphinx.application import Sphinx
 from sphinx.builders import Builder
 from sphinx.builders.html import StandaloneHTMLBuilder
+from sphinx.deprecation import RemovedInSphinx50Warning
 from sphinx.environment import BuildEnvironment
 from sphinx.locale import _, __
 from sphinx.pycode import ModuleAnalyzer
@@ -98,7 +108,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
         return False
 
-    for objnode in list(doctree.findall(addnodes.desc)):
+    for objnode in list(doctree.traverse(addnodes.desc)):
         if objnode.get('domain') != 'py':
             continue
         names: Set[str] = set()
@@ -174,15 +184,27 @@ class ViewcodeAnchorTransform(SphinxPostTransform):
             self.remove_viewcode_anchors()
 
     def convert_viewcode_anchors(self) -> None:
-        for node in self.document.findall(viewcode_anchor):
+        for node in self.document.traverse(viewcode_anchor):
             anchor = nodes.inline('', _('[source]'), classes=['viewcode-link'])
             refnode = make_refnode(self.app.builder, node['refdoc'], node['reftarget'],
                                    node['refid'], anchor)
             node.replace_self(refnode)
 
     def remove_viewcode_anchors(self) -> None:
-        for node in list(self.document.findall(viewcode_anchor)):
+        for node in list(self.document.traverse(viewcode_anchor)):
             node.parent.remove(node)
+
+
+def missing_reference(app: Sphinx, env: BuildEnvironment, node: Element, contnode: Node
+                      ) -> Optional[Node]:
+    # resolve our "viewcode" reference nodes -- they need special treatment
+    if node['reftype'] == 'viewcode':
+        warnings.warn('viewcode extension is no longer use pending_xref node. '
+                      'Please update your extension.', RemovedInSphinx50Warning)
+        return make_refnode(app.builder, node['refdoc'], node['reftarget'],
+                            node['refid'], contnode)
+
+    return None
 
 
 def get_module_filename(app: Sphinx, modname: str) -> Optional[str]:
@@ -327,6 +349,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.connect('env-merge-info', env_merge_info)
     app.connect('env-purge-doc', env_purge_doc)
     app.connect('html-collect-pages', collect_pages)
+    app.connect('missing-reference', missing_reference)
     # app.add_config_value('viewcode_include_modules', [], 'env')
     # app.add_config_value('viewcode_exclude_modules', [], 'env')
     app.add_event('viewcode-find-source')

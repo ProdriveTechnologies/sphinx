@@ -1,13 +1,17 @@
-"""Preserve function defaults.
+"""
+    sphinx.ext.autodoc.preserve_defaults
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Preserve the default argument values of function signatures in source code
-and keep them not evaluated for readability.
+    Preserve the default argument values of function signatures in source code
+    and keep them not evaluated for readability.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
 """
 
 import ast
 import inspect
 import sys
-from inspect import Parameter
 from typing import Any, Dict, List, Optional
 
 from sphinx.application import Sphinx
@@ -69,7 +73,7 @@ def update_defvalue(app: Sphinx, obj: Any, bound_method: bool) -> None:
         lines = inspect.getsource(obj).splitlines()
         if lines[0].startswith((' ', r'\t')):
             lines.insert(0, '')  # insert a dummy line to follow what get_function_def() does.
-    except (OSError, TypeError):
+    except OSError:
         lines = []
 
     try:
@@ -80,11 +84,7 @@ def update_defvalue(app: Sphinx, obj: Any, bound_method: bool) -> None:
             kw_defaults = list(function.args.kw_defaults)
             parameters = list(sig.parameters.values())
             for i, param in enumerate(parameters):
-                if param.default is param.empty:
-                    if param.kind == param.KEYWORD_ONLY:
-                        # Consume kw_defaults for kwonly args
-                        kw_defaults.pop(0)
-                else:
+                if param.default is not param.empty:
                     if param.kind in (param.POSITIONAL_ONLY, param.POSITIONAL_OR_KEYWORD):
                         default = defaults.pop(0)
                         value = get_default_value(lines, default)
@@ -97,18 +97,8 @@ def update_defvalue(app: Sphinx, obj: Any, bound_method: bool) -> None:
                         if value is None:
                             value = ast_unparse(default)  # type: ignore
                         parameters[i] = param.replace(default=DefaultValue(value))
-
-            if bound_method and inspect.ismethod(obj):
-                # classmethods
-                cls = inspect.Parameter('cls', Parameter.POSITIONAL_OR_KEYWORD)
-                parameters.insert(0, cls)
-
             sig = sig.replace(parameters=parameters)
-            if bound_method and inspect.ismethod(obj):
-                # classmethods can't be assigned __signature__ attribute.
-                obj.__dict__['__signature__'] = sig
-            else:
-                obj.__signature__ = sig
+            obj.__signature__ = sig
     except (AttributeError, TypeError):
         # failed to update signature (ex. built-in or extension types)
         pass

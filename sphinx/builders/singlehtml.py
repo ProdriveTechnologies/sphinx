@@ -1,4 +1,12 @@
-"""Single HTML builders."""
+"""
+    sphinx.builders.singlehtml
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Single HTML builders.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from os import path
 from typing import Any, Dict, List, Tuple, Union
@@ -46,7 +54,7 @@ class SingleFileHTMLBuilder(StandaloneHTMLBuilder):
     def fix_refuris(self, tree: Node) -> None:
         # fix refuris with double anchor
         fname = self.config.root_doc + self.out_suffix
-        for refnode in tree.findall(nodes.reference):
+        for refnode in tree.traverse(nodes.reference):
             if 'refuri' not in refnode:
                 continue
             refuri = refnode['refuri']

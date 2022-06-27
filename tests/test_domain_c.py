@@ -1,6 +1,13 @@
-"""Tests the C Domain"""
+"""
+    test_domain_c
+    ~~~~~~~~~~~~~
 
-import itertools
+    Tests the C Domain
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
+
 import zlib
 from xml.etree import ElementTree
 
@@ -322,13 +329,6 @@ def test_domain_c_ast_fundamental_types():
         input = "{key}%s foo" % t
         output = ' '.join(input.split())
         check('type', input, {1: 'foo'}, key='typedef', output=output)
-        if ' ' in t:
-            # try permutations of all components
-            tcs = t.split()
-            for p in itertools.permutations(tcs):
-                input = "{key}%s foo" % ' '.join(p)
-                output = ' '.join(input.split())
-                check("type", input, {1: 'foo'}, key='typedef', output=output)
 
 
 def test_domain_c_ast_type_definitions():
@@ -573,16 +573,12 @@ def test_domain_c_ast_attributes():
           output='__attribute__(()) static inline void f()')
     check('function', '[[attr1]] [[attr2]] void f()', {1: 'f'})
     # position: declarator
-    check('member', 'int *[[attr1]] [[attr2]] i', {1: 'i'})
-    check('member', 'int *const [[attr1]] [[attr2]] volatile i', {1: 'i'},
-          output='int *[[attr1]] [[attr2]] volatile const i')
-    check('member', 'int *[[attr1]] [[attr2]] *i', {1: 'i'})
+    check('member', 'int *[[attr]] i', {1: 'i'})
+    check('member', 'int *const [[attr]] volatile i', {1: 'i'},
+          output='int *[[attr]] volatile const i')
+    check('member', 'int *[[attr]] *i', {1: 'i'})
     # position: parameters
     check('function', 'void f() [[attr1]] [[attr2]]', {1: 'f'})
-
-    # position: enumerator
-    check('enumerator', '{key}Foo [[attr1]] [[attr2]]', {1: 'Foo'})
-    check('enumerator', '{key}Foo [[attr1]] [[attr2]] = 42', {1: 'Foo'})
 
     # issue michaeljones/breathe#500
     check('function', 'LIGHTGBM_C_EXPORT int LGBM_BoosterFree(int handle)',
@@ -591,7 +587,10 @@ def test_domain_c_ast_attributes():
 
 def test_extra_keywords():
     with pytest.raises(DefinitionError,
-                       match='Expected identifier in nested name'):
+                       match='Expected identifier, got user-defined keyword: complex.'):
+        parse('function', 'void f(int complex)')
+    with pytest.raises(DefinitionError,
+                       match='Expected identifier, got user-defined keyword: complex.'):
         parse('function', 'void complex(void)')
 
 
@@ -620,7 +619,7 @@ def filter_warnings(warning, file):
 
 
 def extract_role_links(app, filename):
-    t = (app.outdir / filename).read_text(encoding='utf8')
+    t = (app.outdir / filename).read_text()
     lis = [l for l in t.split('\n') if l.startswith("<li")]
     entries = []
     for l in lis:
@@ -650,7 +649,7 @@ def test_domain_c_build_namespace(app, status, warning):
     app.builder.build_all()
     ws = filter_warnings(warning, "namespace")
     assert len(ws) == 0
-    t = (app.outdir / "namespace.html").read_text(encoding='utf8')
+    t = (app.outdir / "namespace.html").read_text()
     for id_ in ('NS.NSVar', 'NULLVar', 'ZeroVar', 'NS2.NS3.NS2NS3Var', 'PopVar'):
         assert 'id="c.{}"'.format(id_) in t
 
@@ -712,7 +711,7 @@ def test_domain_c_build_field_role(app, status, warning):
 
 def _get_obj(app, queryName):
     domain = app.env.get_domain('c')
-    for name, _dispname, objectType, docname, anchor, _prio in domain.get_objects():
+    for name, dispname, objectType, docname, anchor, prio in domain.get_objects():
         if name == queryName:
             return (docname, anchor, objectType)
     return (queryName, "not", "found")

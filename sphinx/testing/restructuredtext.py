@@ -1,3 +1,11 @@
+"""
+    sphinx.testing.restructuredtext
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
+
 from os import path
 
 from docutils import nodes

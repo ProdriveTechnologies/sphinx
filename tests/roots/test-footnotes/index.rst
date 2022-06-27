@@ -33,7 +33,6 @@ The section with a reference to [AuthorYear]_
 * Second footnote: [1]_
 * `Sphinx <http://sphinx-doc.org/>`_
 * Third footnote: [#]_
-* Fourth footnote: [#named]_
 * `URL including tilde <http://sphinx-doc.org/~test/>`_
 * GitHub Page: `https://github.com/sphinx-doc/sphinx <https://github.com/sphinx-doc/sphinx>`_
 * Mailing list: `sphinx-dev@googlegroups.com <mailto:sphinx-dev@googlegroups.com>`_
@@ -42,7 +41,6 @@ The section with a reference to [AuthorYear]_
 .. [1] Second
 .. [#] Third [#]_
 .. [#] Footnote inside footnote
-.. [#named] Fourth
 
 The section with a reference to [#]_
 =====================================
@@ -177,12 +175,3 @@ The section with an object description
 
 .. py:function:: dummy(N)
    :noindex:
-
-Footnotes referred twice
-========================
-
-* Explicitly numbered footnote: [100]_ [100]_
-* Named footnote: [#twice]_ [#twice]_
-
-.. [100] Numbered footnote
-.. [#twice] Named footnote

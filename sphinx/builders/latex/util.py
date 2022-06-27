@@ -1,4 +1,12 @@
-"""Utilities for LaTeX builder."""
+"""
+    sphinx.builders.latex.util
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    Utilities for LaTeX builder.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Optional
 
@@ -12,7 +20,7 @@ class ExtBabel(Babel):
         self.language_code = language_code
         self.use_polyglossia = use_polyglossia
         self.supported = True
-        super().__init__(language_code)
+        super().__init__(language_code or '')
 
     def uses_cyrillic(self) -> bool:
         return self.language in self.cyrillic_languages

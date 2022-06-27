@@ -1,3 +1,11 @@
+"""
+    sphinx.directives.code
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
+
 import sys
 import textwrap
 from difflib import unified_diff
@@ -49,7 +57,7 @@ class Highlight(SphinxDirective):
 
 
 def dedent_lines(lines: List[str], dedent: int, location: Tuple[str, int] = None) -> List[str]:
-    if dedent is None:
+    if not dedent:
         return textwrap.dedent(''.join(lines)).splitlines(True)
 
     if any(s[:dedent].strip() for s in lines):
@@ -130,9 +138,9 @@ class CodeBlock(SphinxDirective):
 
         if 'dedent' in self.options:
             location = self.state_machine.get_source_and_line(self.lineno)
-            lines = code.splitlines(True)
+            lines = code.split('\n')
             lines = dedent_lines(lines, self.options['dedent'], location=location)
-            code = ''.join(lines)
+            code = '\n'.join(lines)
 
         literal: Element = nodes.literal_block(code, code)
         if 'linenos' in self.options or 'lineno-start' in self.options:
@@ -224,9 +232,9 @@ class LiteralIncludeReader:
                        self.start_filter,
                        self.end_filter,
                        self.lines_filter,
-                       self.dedent_filter,
                        self.prepend_filter,
-                       self.append_filter]
+                       self.append_filter,
+                       self.dedent_filter]
             lines = self.read_file(self.filename, location=location)
             for func in filters:
                 lines = func(lines, location=location)

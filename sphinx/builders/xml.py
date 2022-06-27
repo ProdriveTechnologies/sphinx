@@ -1,4 +1,12 @@
-"""Docutils-native XML and pseudo-XML builders."""
+"""
+    sphinx.builders.xml
+    ~~~~~~~~~~~~~~~~~~~
+
+    Docutils-native XML and pseudo-XML builders.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from os import path
 from typing import Any, Dict, Iterator, Set, Type, Union
@@ -63,10 +71,7 @@ class XMLBuilder(Builder):
         # work around multiple string % tuple issues in docutils;
         # replace tuples in attribute values with lists
         doctree = doctree.deepcopy()
-        for domain in self.env.domains.values():
-            xmlns = "xmlns:" + domain.name
-            doctree[xmlns] = "https://www.sphinx-doc.org/"  # type: ignore
-        for node in doctree.findall(nodes.Element):
+        for node in doctree.traverse(nodes.Element):
             for att, value in node.attributes.items():
                 if isinstance(value, tuple):
                     node.attributes[att] = list(value)

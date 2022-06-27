@@ -1,4 +1,12 @@
-"""Test copyright year adjustment"""
+"""
+    test_correct_year
+    ~~~~~~~~~~~~~~~~~
+
+    Test copyright year adjustment
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 import pytest
 
 
@@ -24,5 +32,5 @@ def expect_date(request, monkeypatch):
 @pytest.mark.sphinx('html', testroot='correct-year')
 def test_correct_year(expect_date, app):
     app.build()
-    content = (app.outdir / 'index.html').read_text(encoding='utf8')
+    content = (app.outdir / 'index.html').read_text()
     assert expect_date in content

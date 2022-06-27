@@ -1,4 +1,12 @@
-"""consntants for LaTeX builder."""
+"""
+    sphinx.builders.latex.constants
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    consntants for LaTeX builder.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Any, Dict
 

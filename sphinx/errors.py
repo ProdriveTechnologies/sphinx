@@ -1,4 +1,13 @@
-"""Contains SphinxError and a few subclasses."""
+"""
+    sphinx.errors
+    ~~~~~~~~~~~~~
+
+    Contains SphinxError and a few subclasses (in an extra module to avoid
+    circular import problems).
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from typing import Any
 

@@ -1,4 +1,12 @@
-"""Test our handling of metadata in files with bibliographic metadata."""
+"""
+    test_metadata
+    ~~~~~~~~~~~~~
+
+    Test our handling of metadata in files with bibliographic metadata.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 # adapted from an example of bibliographic metadata at
 # https://docutils.sourceforge.io/docs/user/rst/demo.txt

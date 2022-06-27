@@ -1,4 +1,12 @@
-"""Highlight code blocks using Pygments."""
+"""
+    sphinx.highlighting
+    ~~~~~~~~~~~~~~~~~~~
+
+    Highlight code blocks using Pygments.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from functools import partial
 from importlib import import_module

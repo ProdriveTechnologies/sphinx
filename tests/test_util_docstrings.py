@@ -1,4 +1,12 @@
-"""Test sphinx.util.docstrings."""
+"""
+    test_util_docstrings
+    ~~~~~~~~~~~~~~~~~~~~
+
+    Test sphinx.util.docstrings.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from sphinx.util.docstrings import prepare_commentdoc, prepare_docstring, separate_metadata
 

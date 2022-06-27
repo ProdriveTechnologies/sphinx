@@ -1,4 +1,12 @@
-"""Tests sphinx.util.rst functions."""
+"""
+    test_util_rst
+    ~~~~~~~~~~~~~~~
+
+    Tests sphinx.util.rst functions.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 from docutils.statemachine import StringList
 from jinja2 import Environment

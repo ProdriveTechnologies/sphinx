@@ -1,4 +1,12 @@
-"""Test the EventManager class."""
+"""
+    test_events
+    ~~~~~~~~~~~
+
+    Test the EventManager class.
+
+    :copyright: Copyright 2007-2021 by the Sphinx team, see AUTHORS.
+    :license: BSD, see LICENSE for details.
+"""
 
 import pytest
 
